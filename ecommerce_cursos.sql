@@ -34,13 +34,9 @@ CREATE TABLE `books` (
   `description` text DEFAULT NULL,
   `cover_image` varchar(500) DEFAULT NULL,
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `original_price` decimal(10,2) DEFAULT NULL,
   `amazon_url` varchar(1000) NOT NULL,
   `category` varchar(100) DEFAULT 'English Learning',
-  `rating` decimal(3,2) DEFAULT 0.00,
-  `pages` int(11) DEFAULT NULL,
   `publication_date` date DEFAULT NULL,
-  `isbn` varchar(20) DEFAULT NULL,
   `is_featured` tinyint(1) DEFAULT 0,
   `is_active` tinyint(1) DEFAULT 1,
   `display_order` int(11) DEFAULT 0,
@@ -219,7 +215,6 @@ CREATE TABLE `users` (
   `last_name` varchar(100) NOT NULL,
   `role` enum('user','admin') DEFAULT 'user',
   `is_active` tinyint(1) DEFAULT 1,
-  `google_id` varchar(255) DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
   `email_verified` tinyint(1) DEFAULT 0,
   `failed_login_attempts` int(11) DEFAULT 0,
@@ -233,7 +228,7 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `role`, `is_active`, `google_id`, `last_login`, `email_verified`, `failed_login_attempts`, `locked_until`, `password_changed_at`, `created_at`, `updated_at`) VALUES
+INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `role`, `is_active`, `last_login`, `email_verified`, `failed_login_attempts`, `locked_until`, `password_changed_at`, `created_at`, `updated_at`) VALUES
 (1, 'bedoyaalberth@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Admin', 'User', 'admin', 1, NULL, '2025-09-21 05:44:09', 1, 0, NULL, NULL, '2025-09-21 07:55:30', '2025-09-21 05:44:09'),
 (2, 'maindevuser@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Test', 'User', 'user', 1, NULL, '2025-09-21 06:14:15', 0, 0, NULL, NULL, '2025-09-21 02:58:58', '2025-09-21 06:14:15');
 

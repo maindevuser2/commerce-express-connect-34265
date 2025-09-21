@@ -311,7 +311,7 @@ $userDisplayName = getUserDisplayName($currentUser);
                 $featuredBooks = $bookModel->getFeatured(6); // Obtener máximo 6 libros destacados
             } catch (Exception $e) {
                 $featuredBooks = [];
-                error_log("Error cargando libros en home.php: " . $e->getMessage());
+                error_log("Error cargando libros en index.php: " . $e->getMessage());
             }
             ?>
             
@@ -329,11 +329,6 @@ $userDisplayName = getUserDisplayName($currentUser);
                                         <i class="fas fa-book"></i>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($book['original_price'] && $book['original_price'] > $book['price']): ?>
-                                    <div class="showcase-discount-badge">
-                                        -<?php echo round((($book['original_price'] - $book['price']) / $book['original_price']) * 100); ?>%
-                                    </div>
-                                <?php endif; ?>
                             </div>
                             <div class="book-showcase-info">
                                 <div class="book-showcase-category"><?php echo htmlspecialchars($book['category']); ?></div>
@@ -341,9 +336,6 @@ $userDisplayName = getUserDisplayName($currentUser);
                                 <p class="book-showcase-author">por <?php echo htmlspecialchars($book['author']); ?></p>
                                 <div class="book-showcase-price">
                                     <span class="showcase-current-price">$<?php echo number_format($book['price'], 2); ?></span>
-                                    <?php if ($book['original_price'] && $book['original_price'] > $book['price']): ?>
-                                        <span class="showcase-original-price">$<?php echo number_format($book['original_price'], 2); ?></span>
-                                    <?php endif; ?>
                                 </div>
                                 <button class="btn-showcase-details" onclick="showBookDetails(<?php echo $book['id']; ?>)">
                                     <i class="fas fa-info-circle"></i> Ver Detalles
@@ -403,6 +395,43 @@ $userDisplayName = getUserDisplayName($currentUser);
             <p>Aprende inglés con los mejores cursos online</p>
         </div>
     </footer>
+
+    <!-- Book Details Modal -->
+    <div id="bookModal" class="book-modal">
+        <div class="book-modal-content">
+            <div class="book-modal-header">
+                <button class="book-modal-close" onclick="closeBookModal()">&times;</button>
+                <h2 id="modalBookTitle">Cargando...</h2>
+            </div>
+            <div class="book-modal-body">
+                <div class="book-details-grid">
+                    <div class="book-details-cover">
+                        <img id="modalBookCover" src="/placeholder.svg" alt="Book Cover">
+                    </div>
+                    <div class="book-details-info">
+                        <h2 id="modalBookTitleFull">Título del Libro</h2>
+                        <p class="book-details-author" id="modalBookAuthor">Autor</p>
+                        <div class="book-details-price">
+                            <span class="book-details-current-price" id="modalBookPrice">$0.00</span>
+                            <span class="book-details-original-price" id="modalBookOriginalPrice" style="display: none;">$0.00</span>
+                        </div>
+                        <div class="book-details-meta" id="modalBookMeta">
+                            <!-- Meta information will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="book-description">
+                    <h3>Descripción</h3>
+                    <p id="modalBookDescription">Descripción del libro...</p>
+                </div>
+                <div class="book-modal-actions">
+                    <a id="modalAmazonLink" href="#" target="_blank" class="btn-buy-amazon">
+                        <i class="fab fa-amazon"></i> Comprar en Amazon
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -639,40 +668,3 @@ document.addEventListener('keydown', function(event) {
     </script>
 </body>
 </html>
-
-    <!-- Book Details Modal -->
-    <div id="bookModal" class="book-modal">
-        <div class="book-modal-content">
-            <div class="book-modal-header">
-                <button class="book-modal-close" onclick="closeBookModal()">&times;</button>
-                <h2 id="modalBookTitle">Cargando...</h2>
-            </div>
-            <div class="book-modal-body">
-                <div class="book-details-grid">
-                    <div class="book-details-cover">
-                        <img id="modalBookCover" src="/placeholder.svg" alt="Book Cover">
-                    </div>
-                    <div class="book-details-info">
-                        <h2 id="modalBookTitleFull">Título del Libro</h2>
-                        <p class="book-details-author" id="modalBookAuthor">Autor</p>
-                        <div class="book-details-price">
-                            <span class="book-details-current-price" id="modalBookPrice">$0.00</span>
-                            <span class="book-details-original-price" id="modalBookOriginalPrice" style="display: none;">$0.00</span>
-                        </div>
-                        <div class="book-details-meta" id="modalBookMeta">
-                            <!-- Meta information will be populated here -->
-                        </div>
-                    </div>
-                </div>
-                <div class="book-description">
-                    <h3>Descripción</h3>
-                    <p id="modalBookDescription">Descripción del libro...</p>
-                </div>
-                <div class="book-modal-actions">
-                    <a id="modalAmazonLink" href="#" target="_blank" class="btn-buy-amazon">
-                        <i class="fab fa-amazon"></i> Comprar en Amazon
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
