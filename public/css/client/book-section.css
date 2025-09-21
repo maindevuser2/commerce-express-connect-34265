@@ -3,14 +3,14 @@
    =================================== */
 
 /* Sección principal de libros */
-.books-section {
+.books-showcase {
   padding: 80px 0;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   position: relative;
   overflow: hidden;
 }
 
-.books-section::before {
+.books-showcase::before {
   content: "";
   position: absolute;
   top: 0;
@@ -22,7 +22,7 @@
   z-index: 0;
 }
 
-.books-section .container {
+.books-showcase .container {
   position: relative;
   z-index: 1;
 }
@@ -63,7 +63,7 @@
 }
 
 /* Grid de libros */
-.books-grid {
+.books-showcase-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
@@ -71,7 +71,7 @@
 }
 
 /* Tarjeta de libro */
-.book-card {
+.book-showcase-card {
   background: white;
   border-radius: 16px;
   overflow: hidden;
@@ -81,14 +81,14 @@
   border: 1px solid #e2e8f0;
 }
 
-.book-card:hover {
+.book-showcase-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   border-color: #cbd5e0;
 }
 
 /* Portada del libro */
-.book-cover {
+.book-showcase-cover {
   position: relative;
   height: 200px;
   overflow: hidden;
@@ -98,18 +98,18 @@
   justify-content: center;
 }
 
-.book-cover img {
+.book-showcase-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.book-card:hover .book-cover img {
+.book-showcase-card:hover .book-showcase-cover img {
   transform: scale(1.05);
 }
 
-.book-placeholder {
+.book-showcase-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -119,14 +119,14 @@
   font-size: 0.875rem;
 }
 
-.book-placeholder i {
+.book-showcase-placeholder i {
   font-size: 3rem;
   margin-bottom: 8px;
   opacity: 0.6;
 }
 
 /* Badge de descuento */
-.discount-badge {
+.showcase-discount-badge {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -141,11 +141,11 @@
 }
 
 /* Información del libro */
-.book-info {
+.book-showcase-info {
   padding: 24px;
 }
 
-.book-category {
+.book-showcase-category {
   display: inline-block;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -158,7 +158,7 @@
   margin-bottom: 12px;
 }
 
-.book-title {
+.book-showcase-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: #1a202c;
@@ -170,7 +170,7 @@
   overflow: hidden;
 }
 
-.book-author {
+.book-showcase-author {
   color: #64748b;
   font-size: 0.875rem;
   margin-bottom: 12px;
@@ -201,20 +201,20 @@
 }
 
 /* Precio del libro */
-.book-price {
+.book-showcase-price {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
 }
 
-.current-price {
+.showcase-current-price {
   font-size: 1.5rem;
   font-weight: 700;
   color: #059669;
 }
 
-.original-price {
+.showcase-original-price {
   font-size: 1rem;
   color: #9ca3af;
   text-decoration: line-through;
@@ -226,7 +226,7 @@
   gap: 8px;
 }
 
-.btn-details,
+.btn-showcase-details,
 .btn-amazon {
   flex: 1;
   padding: 10px 16px;
@@ -244,12 +244,12 @@
   gap: 6px;
 }
 
-.btn-details {
+.btn-showcase-details {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
-.btn-details:hover {
+.btn-showcase-details:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
@@ -501,7 +501,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .books-section {
+  .books-showcase {
     padding: 60px 0;
   }
 
@@ -509,28 +509,28 @@
     font-size: 2rem;
   }
 
-  .books-grid {
+  .books-showcase-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
   }
 
-  .book-card {
+  .book-showcase-card {
     border-radius: 12px;
   }
 
-  .book-cover {
+  .book-showcase-cover {
     height: 180px;
   }
 
-  .book-info {
+  .book-showcase-info {
     padding: 20px;
   }
 
-  .book-title {
+  .book-showcase-title {
     font-size: 1.125rem;
   }
 
-  .current-price {
+  .showcase-current-price {
     font-size: 1.25rem;
   }
 
@@ -538,7 +538,7 @@
     flex-direction: column;
   }
 
-  .btn-details,
+  .btn-showcase-details,
   .btn-amazon {
     padding: 12px 16px;
   }
@@ -586,7 +586,7 @@
     font-size: 1.75rem;
   }
 
-  .books-grid {
+  .books-showcase-grid {
     grid-template-columns: 1fr;
   }
 
@@ -604,7 +604,7 @@
 }
 
 /* Efectos adicionales */
-.book-card::before {
+.book-showcase-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -618,35 +618,35 @@
   z-index: 1;
 }
 
-.book-card:hover::before {
+.book-showcase-card:hover::before {
   opacity: 1;
 }
 
-.book-card > * {
+.book-showcase-card > * {
   position: relative;
   z-index: 2;
 }
 
 /* Mejoras de accesibilidad */
-.btn-details:focus,
+.btn-showcase-details:focus,
 .btn-amazon:focus,
 .book-modal-close:focus {
   outline: 2px solid #667eea;
   outline-offset: 2px;
 }
 
-.book-card:focus-within {
+.book-showcase-card:focus-within {
   transform: translateY(-4px);
   box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
 }
 
 /* Estados de carga */
-.book-card.loading {
+.book-showcase-card.loading {
   opacity: 0.7;
   pointer-events: none;
 }
 
-.book-card.loading .book-cover::after {
+.book-showcase-card.loading .book-showcase-cover::after {
   content: "";
   position: absolute;
   top: 50%;
