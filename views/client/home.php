@@ -346,7 +346,7 @@ $userDisplayName = getUserDisplayName($currentUser);
                 </div>
                 
                 <div class="section-footer">
-                    <a href="signup.php" class="btn-primary">Ver Más Libros</a>
+                    <a href="all-books.php" class="btn-primary">Ver Más Libros</a>
                 </div>
             <?php endif; ?>
         </div>

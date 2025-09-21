@@ -478,6 +478,32 @@
   box-shadow: 0 8px 15px -3px rgba(255, 149, 0, 0.4);
 }
 
+/* Pie de sección */
+.section-footer {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.section-footer .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3);
+}
+
+.section-footer .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(102, 126, 234, 0.4);
+}
+
 /* Animaciones */
 @keyframes fadeIn {
   from {
