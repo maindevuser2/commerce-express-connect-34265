@@ -1,0 +1,636 @@
+/* Estilos base para autenticación */
+.auth-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--white); /* Fondo blanco */
+  padding: 20px;
+}
+
+.auth-container {
+  background: var(--white);
+  border-radius: 25px; /* Bordes más redondeados para un look cartoon */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave y pronunciada */
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición para efectos */
+}
+
+.auth-container:hover {
+  transform: translateY(-5px); /* Ligero levantamiento al pasar el ratón */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Sombra más intensa al levantar */
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-header h1 {
+  color: var(--primary-color); /* Color principal para el título */
+  font-size: 2.8rem; /* Un poco más grande */
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05); /* Sombra de texto sutil */
+}
+
+.auth-header p {
+  color: var(--dark-gray);
+  font-size: 1.1rem;
+}
+
+/* Flash Messages */
+.flash-message {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px; /* Bordes más suaves */
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+}
+
+.flash-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.flash-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.flash-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.flash-message.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Password strength indicator */
+.password-strength {
+  margin-top: 10px;
+}
+
+.strength-meter {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.strength-segment {
+  height: 6px; /* Más grueso */
+  flex: 1;
+  background-color: var(--medium-gray);
+  border-radius: 3px; /* Más redondeado */
+  transition: background-color 0.3s ease;
+}
+
+.strength-segment.weak {
+  background-color: var(--red-color);
+}
+
+.strength-segment.medium {
+  background-color: var(--orange-color);
+}
+
+.strength-segment.strong {
+  background-color: var(--teal-color);
+}
+
+.strength-text {
+  font-size: 12px;
+  color: var(--dark-gray);
+}
+
+/* Formularios */
+.auth-form {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dark-gray);
+  z-index: 1;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 14px 15px 14px 45px; /* Padding por defecto para campos con solo icono izquierdo */
+  border: 2px solid var(--medium-gray);
+  border-radius: 15px;
+  font-size: 16px;
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+/* Padding especial para campos de contraseña que tienen icono de toggle */
+.input-with-icon input[type="password"] {
+  padding: 14px 45px 14px 45px; /* Espacio para ambos iconos */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--dark-gray);
+  z-index: 2;
+}
+
+.toggle-password:hover {
+  color: var(--primary-color);
+}
+
+/* Mensajes de error */
+.error-message {
+  color: var(--red-color);
+  font-size: 14px;
+  margin-top: 5px;
+  min-height: 20px;
+}
+
+/* Opciones del formulario */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px; /* Ligeramente redondeado */
+}
+
+.forgot-password {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Botones */
+.btn-primary {
+  background-color: var(--orange-color); /* Color naranja vibrante */
+  color: var(--white);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 15px; /* Más redondeado */
+  font-size: 18px; /* Un poco más grande */
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 8px 15px rgba(255, 120, 70, 0.3); /* Sombra que "salta" */
+}
+
+.btn-primary:hover {
+  background-color: #e66a3c; /* Tono más oscuro de naranja para hover */
+  transform: translateY(-3px); /* Más "salto" */
+  box-shadow: 0 12px 20px rgba(255, 120, 70, 0.4); /* Sombra más pronunciada */
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Divisor */
+.auth-divider {
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+}
+
+.auth-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--medium-gray);
+}
+
+.auth-divider span {
+  background: var(--white);
+  padding: 0 20px;
+  color: var(--dark-gray);
+  font-size: 14px;
+}
+
+/* Autenticación social */
+.social-auth {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border: 2px solid var(--medium-gray);
+  border-radius: 15px; /* Más redondeado */
+  background: var(--white);
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  cursor: pointer;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+}
+
+.social-btn:hover {
+  border-color: var(--primary-color);
+  background-color: var(--light-gray);
+  transform: translateY(-2px); /* Ligero levantamiento */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12); /* Sombra más pronunciada */
+}
+
+.social-btn.google:hover {
+  border-color: var(--orange-color);
+  background: #fff8f2;
+}
+
+.social-btn.facebook {
+  display: none;
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  color: var(--dark-gray);
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: var(--white);
+  border-radius: 20px; /* Más redondeado */
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Sombra más suave */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.close-modal {
+  font-size: 28px; /* Un poco más grande */
+  cursor: pointer;
+  color: var(--dark-gray);
+}
+
+.close-modal:hover {
+  color: var(--primary-color); /* Color principal al pasar el ratón */
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-body p {
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+
+  .auth-header h1 {
+    font-size: 2rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .social-auth {
+    flex-direction: column;
+  }
+
+  .form-options {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+}
+
+/* Estilos adicionales para el modal de recuperación */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-header h2 {
+    color: #333;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.modal-body p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.reset-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.reset-form .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-form .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.reset-form .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.success-message i {
+    margin-right: 10px;
+    color: #28a745;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.error-message i {
+    margin-right: 10px;
+    color: #dc3545;
+}
+
+.error-message:empty {
+    display: none;
+}

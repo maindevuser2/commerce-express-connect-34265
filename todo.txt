@@ -1,0 +1,2 @@
+1. Resolver el problema de recuperar contraseña.
+2. Css de profile en cliente.

@@ -1,73 +1,32 @@
-# Welcome to your Lovable project
+<Ajustar según el entorno para el enrutamiendo en las vistas del admin en:>
+    views/admin/config.php
+    NOTA: Si no se ajusta el url base pueden haber varios probleams con el funcionamiento del dashboard en las vistas del administrador.
 
-## Project info
+    Ejemplo:
+        Url Base: http://localhost:3000/Users/alber/OneDrive/Documents/GitHub/E-commerce/
+        Url Fija: index.php?page=admin&action=dashboard
 
-**URL**: https://lovable.dev/projects/ea218bdc-a222-4c5b-bf8e-2dc750c3ae2d
+<Ajustar según el entorno para el envio de correos de recuperacion en:>
+    controllers/AuthController.php
 
-## How can I edit this code?
+    //URL BASES
+    $baseUrl = "http://localhost:3000/OneDrive/Documents/GitHub/E-commerce/";
+    $resetFileUrl = "reset_password.php?token=$token";
 
-There are several ways of editing your application.
+<Librerias implementadas>
+    Stripe con composer: composer require stripe/stripe-php
+    PHPMailer con composer: composer require phpmailer/phpmailer
+    Acceder de forma segura a variables delicadas: composer require vlucas/phpdotenv
 
-**Use Lovable**
+<Generar clave para poder mandar emails>
+    https://myaccount.google.com/apppasswords
+    Nota: Cambiar la clave (sin espacios) por la que está en .env
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ea218bdc-a222-4c5b-bf8e-2dc750c3ae2d) and start prompting.
+<Editar la ruta base en .env para el envio de correos de recuperacion>
+    
+    Ejemplo:
+        #Server Base URL
+        APP_URL=http://localhost:3000/OneDrive/Documents/GitHub/E-commerce
 
-Changes made via Lovable will be committed automatically to this repo.
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ea218bdc-a222-4c5b-bf8e-2dc750c3ae2d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+<PROYECTO TERMINADO>

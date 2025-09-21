@@ -1,0 +1,473 @@
+<?php
+// Asegúrate de que la sesión esté iniciada
+if (session_status() == PHP_SESSION_NONE) {
+   session_start();
+}
+
+// Incluir todas las dependencias necesarias con rutas correctas
+require_once __DIR__ . '/../../controllers/AuthController.php';
+require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../models/Order.php';
+require_once __DIR__ . '/../../models/UserCourse.php';
+require_once __DIR__ . '/../../models/Playlist.php';
+require_once __DIR__ . '/../../controllers/CartController.php';
+
+// Usar los namespaces correctos
+use Controllers\AuthController;
+use Models\Order;
+use Models\UserCourse;
+use Models\Playlist;
+use Controllers\CartController;
+
+// Verificar autenticación
+if (!AuthController::isAuthenticated()) {
+   AuthController::setFlashMessage('error', 'Debes iniciar sesión para ver tu historial de compras.');
+   header('Location: ../../login.php');
+   exit();
+}
+
+// Obtener usuario actual
+$currentUser = AuthController::getCurrentUser();
+$userId = $currentUser['id'];
+
+// Conectar a la base de datos
+$database = new \Database();
+$pdo = $database->getConnection();
+
+// Inicializar modelos
+$orderModel = new Order($pdo);
+$userCourseModel = new UserCourse($pdo);
+$playlistModel = new Playlist($pdo);
+
+// Obtener historial de pedidos del usuario
+$orders = $orderModel->readByUserId($userId);
+
+// Obtener cursos comprados del usuario con detalles completos
+$purchasedCourses = $userCourseModel->readByUserId($userId);
+
+// Obtener estadísticas del usuario
+try {
+    $userStats = [
+        'total_courses' => count($purchasedCourses),
+        'total_spent' => 0,
+        'different_levels' => 0,
+        'first_purchase' => null
+    ];
+
+    if (!empty($orders)) {
+        $totalSpent = 0;
+        $levels = [];
+        $firstPurchase = null;
+
+        foreach ($orders as $order) {
+            if (($order['status'] ?? '') === 'completed') {
+                $totalSpent += floatval($order['amount'] ?? 0);
+            }
+            if ($firstPurchase === null || strtotime($order['created_at'] ?? 'now') < strtotime($firstPurchase)) {
+                $firstPurchase = $order['created_at'];
+            }
+        }
+
+        foreach ($purchasedCourses as $course) {
+            if (!empty($course['level']) && !in_array($course['level'], $levels)) {
+                $levels[] = $course['level'];
+            }
+        }
+
+        $userStats['total_spent'] = $totalSpent;
+        $userStats['different_levels'] = count($levels);
+        $userStats['first_purchase'] = $firstPurchase;
+    }
+} catch (Exception $e) {
+    error_log("Error obteniendo estadísticas de usuario: " . $e->getMessage());
+    $userStats = [
+        'total_courses' => 0,
+        'total_spent' => 0,
+        'different_levels' => 0,
+        'first_purchase' => null
+    ];
+}
+
+// Obtener conteo del carrito para el header
+$cartController = new CartController();
+$cart_count = $cartController->getCartCount();
+
+// Obtener mensaje flash si existe
+$flashMessage = AuthController::getFlashMessage();
+
+// Funciones helper
+function formatDate($date) {
+   return date('d/m/Y H:i', strtotime($date));
+}
+
+function getLevelColor($level) {
+   $colors = [
+       'A1' => '#56e2c6',
+       'A2' => '#4dabf7',
+       'B1' => '#ffa726',
+       'B2' => '#ff5a5a',
+       'C1' => '#8a56e2',
+       'Mixto' => '#6c757d'
+   ];
+   return $colors[$level] ?? '#6c757d';
+}
+
+function getOrderStatusBadge($status) {
+   $badges = [
+       'completed' => ['text' => 'Completado', 'class' => 'success'],
+       'pending' => ['text' => 'Pendiente', 'class' => 'warning'],
+       'failed' => ['text' => 'Fallido', 'class' => 'danger'],
+       'cancelled' => ['text' => 'Cancelado', 'class' => 'secondary']
+   ];
+
+   $badge = $badges[$status] ?? ['text' => ucfirst($status), 'class' => 'secondary'];
+   return '<span class="status-badge status-' . $badge['class'] . '">' . $badge['text'] . '</span>';
+}
+
+// Función helper para obtener el nombre del usuario de forma segura
+function getUserDisplayName($user) {
+    if (empty($user) || !is_array($user)) {
+        return 'Usuario';
+    }
+
+    if (!empty($user['name'])) {
+        return htmlspecialchars($user['name']);
+    }
+
+    if (!empty($user['first_name'])) {
+        $name = $user['first_name'];
+        if (!empty($user['last_name'])) {
+            $name .= ' ' . $user['last_name'];
+        }
+        return htmlspecialchars($name);
+    }
+
+    if (!empty($user['email'])) {
+        $emailParts = explode('@', $user['email']);
+        return htmlspecialchars(ucfirst($emailParts[0]));
+    }
+
+    return 'Usuario';
+}
+
+
+// Cálculo adicional: total invertido
+$totalSpent = 0;
+
+foreach ($orders as $order) {
+    if (($order['status'] ?? '') === 'completed') {
+        $totalSpent += floatval($order['amount'] ?? 0);
+    }
+}
+
+// Niveles distintos
+$levels = [];
+foreach ($purchasedCourses as $course) {
+    if (!empty($course['level'])) {
+        $levels[] = $course['level'];
+    }
+}
+$differentLevels = count(array_unique($levels));
+
+// Días desde la primera compra
+$firstAccessDate = $userCourseModel->getFirstAccessDate($userId);
+$daysLearning = 0;
+if ($firstAccessDate) {
+    $timestamp = strtotime($firstAccessDate);
+    $daysLearning = floor((time() - $timestamp) / (60 * 60 * 24));
+}
+
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Mi Historial de Compras - El Profesor Hernán</title>
+   <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="../../public/css/client/purchase-history.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+   <!-- Header -->
+   <header class="header">
+       <div class="container">
+           <div class="logo">
+               <img src="../../public/img/logo-profe-hernan.png" alt="El Profesor Hernán" style="height: 40px;">
+               <span>El Profesor Hernán</span>
+           </div>
+           
+           <nav class="nav">
+               <ul>
+                   <li><a href="home.php">Inicio</a></li>
+                   <li><a href="all-courses.php">Cursos</a></li>
+                   <li><a href="cart.php">
+                       <i class="fas fa-shopping-cart"></i>
+                       Carrito
+                       <?php if ($cart_count > 0): ?>
+                           <span class="cart-count"><?php echo $cart_count; ?></span>
+                       <?php endif; ?>
+                   </a></li>
+               </ul>
+           </nav>
+           
+           <div class="auth-links">
+               <span>Hola, <?php echo getUserDisplayName($currentUser); ?></span>
+               <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
+                   <a href="../admin/index.php?controller=admin&action=dashboard" class="btn-admin">Panel Admin</a>
+               <?php endif; ?>
+               <a href="purchase-history.php" class="btn-history active">Mis Cursos</a>
+               <a href="../../logout.php" class="btn-logout">Cerrar Sesión</a>
+           </div>
+       </div>
+   </header>
+
+   <!-- Purchase History Section -->
+   <section class="purchase-history-section">
+       <div class="container">
+           <!-- Page Header -->
+           <div class="page-header">
+               <h1><i class="fas fa-graduation-cap"></i> Mi Historial de Aprendizaje</h1>
+               <p>Gestiona tus cursos y revisa tu progreso académico</p>
+           </div>
+
+           <?php if ($flashMessage): ?>
+               <div class="alert alert-<?php echo $flashMessage['type']; ?>">
+                   <i class="fas fa-<?php echo $flashMessage['type'] === 'error' ? 'exclamation-triangle' : 'check-circle'; ?>"></i>
+                   <?php echo $flashMessage['message']; ?>
+               </div>
+           <?php endif; ?>
+
+           <!-- Statistics -->
+           <?php if (!empty($userStats)): ?>
+               <div class="stats-grid">
+                   <div class="stat-card">
+                       <div class="icon courses">
+                           <i class="fas fa-book"></i>
+                       </div>
+                       <div class="number"><?php echo $userStats['total_courses'] ?? 0; ?></div>
+                       <div class="label">Cursos Adquiridos</div>
+                   </div>
+
+                    <div class="stat-card">
+                        <div class="icon spent">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="number">$<?php echo number_format($totalSpent, 2); ?></div>
+                        <div class="label">Total Invertido</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="icon levels">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="number"><?php echo $differentLevels; ?></div>
+                        <div class="label">Niveles Diferentes</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="icon time">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="number"><?php echo $daysLearning; ?></div>
+                        <div class="label">Días de Trayectoria</div>
+                    </div>
+
+               </div>
+           <?php endif; ?>
+
+           <!-- Content Tabs -->
+           <div class="content-tabs">
+               <button class="tab-button active" onclick="switchTab('courses')">
+                   <i class="fas fa-play-circle"></i> Mis Cursos
+               </button>
+               <button class="tab-button" onclick="switchTab('orders')">
+                   <i class="fas fa-receipt"></i> Historial de Compras
+               </button>
+           </div>
+
+           <!-- Courses Tab -->
+           <div id="courses-tab" class="tab-content active">
+               <?php if (!empty($purchasedCourses)): ?>
+                   <div class="courses-grid">
+                       <?php foreach ($purchasedCourses as $course): ?>
+                           <div class="course-card">
+                               <div class="course-image">
+                                   <?php 
+                                        $courseImageUrl = 'https://via.placeholder.com/300x200/8a56e2/ffffff?text=Curso'; // Imagen por defecto
+
+                                        if (!empty($course['cover_image'])) {
+                                            $courseImageUrl = '../../' . ltrim($course['cover_image'], '/');
+                                        } elseif (!empty($course['thumbnail'])) {
+                                            $courseImageUrl = '../../' . ltrim($course['thumbnail'], '/');
+                                        }
+                                   ?>
+                                   <img src="<?php echo htmlspecialchars($courseImageUrl); ?>" 
+                                        alt="<?php echo htmlspecialchars($course['name'] ?? 'Curso'); ?>">
+                                   <div class="course-level" style="background-color: <?php echo getLevelColor($course['level'] ?? 'Mixto'); ?>">
+                                       <?php echo htmlspecialchars($course['level'] ?? 'Todos los niveles'); ?>
+                                   </div>
+                               </div>
+                               <div class="course-content">
+                                   <h3 class="course-title"><?php echo htmlspecialchars($course['name'] ?? 'Curso sin nombre'); ?></h3>
+                                   <p class="course-description">
+                                       <?php echo htmlspecialchars($course['description'] ?: 'Curso completo de inglés diseñado para mejorar tus habilidades lingüísticas.'); ?>
+                                   </p>
+                                   <div class="course-meta">
+                                       <span><i class="fas fa-calendar"></i> Adquirido: <?php echo htmlspecialchars(formatDate($course['access_granted_at'])); ?></span>
+                                   </div>
+                                   <div class="course-meta">
+                                        <span class="course-price">$<?php echo number_format($course['price'] ?? 0, 2); ?></span>
+                                        <span><i class="fas fa-check-circle" style="color: var(--teal-color);"></i> Acceso Completo</span>
+                                   </div>
+                                    <div class="course-actions">
+                                        <a href="playlist_videos.php?id=<?php echo $course['playlist_id']; ?>" class="btn-access">
+                                            <i class="fas fa-play"></i> Acceder al Curso
+                                        </a>
+                                    </div>
+                               </div>
+                           </div>
+                       <?php endforeach; ?>
+                   </div>
+               <?php else: ?>
+                   <div class="empty-state">
+                       <i class="fas fa-book-open"></i>
+                       <h3>Aún no tienes cursos</h3>
+                       <p>¡Comienza tu viaje de aprendizaje hoy! Explora nuestros cursos de inglés y encuentra el perfecto para ti.</p>
+                       <a href="cart.php" class="btn-browse">
+                           <i class="fas fa-search"></i> Explorar Cursos
+                       </a>
+                   </div>
+               <?php endif; ?>
+           </div>
+
+           <!-- Orders Tab -->
+           <div id="orders-tab" class="tab-content">
+               <?php if (!empty($orders)): ?>
+                   <div class="orders-table">
+                       <div class="table-header table-row">
+                           <div>Pedido #</div>
+                           <div>Cursos</div>
+                           <div>Total</div>
+                           <div>Estado</div>
+                           <div>Fecha</div>
+                       </div>
+                       <?php foreach ($orders as $order): ?>
+                           <div class="table-row">
+                               <div>
+                                   <strong>#<?php echo htmlspecialchars($order['id'] ?? ''); ?></strong>
+                               </div>
+                               <div>
+                                   <?php if (!empty($order['courses_purchased'])): ?>
+                                       <?php echo htmlspecialchars($order['courses_purchased']); ?>
+                                   <?php else: ?>
+                                       <?php echo ($order['course_count'] ?? 0); ?> curso(s)
+                                   <?php endif; ?>
+                               </div>
+                               <div>
+                                   <strong>$<?php echo number_format($order['amount'] ?? 0, 2); ?></strong>
+                               </div>
+                               <div>
+                                   <?php echo getOrderStatusBadge($order['status'] ?? 'unknown'); ?>
+                               </div>
+                               <div>
+                                   <?php echo formatDate($order['created_at'] ?? 'now'); ?>
+                               </div>
+                           </div>
+                       <?php endforeach; ?>
+                   </div>
+               <?php else: ?>
+                   <div class="empty-state">
+                       <i class="fas fa-receipt"></i>
+                       <h3>No tienes pedidos aún</h3>
+                       <p>Cuando realices tu primera compra, aparecerá aquí tu historial de Compras.</p>
+                       <a href="cart.php" class="btn-browse">
+                           <i class="fas fa-shopping-cart"></i> Hacer Primera Compra
+                       </a>
+                   </div>
+               <?php endif; ?>
+           </div>
+
+           <!-- Quick Actions -->
+           <div style="text-align: center; margin-top: 3rem;">
+               <a href="home.php" class="btn-browse" style="margin-right: 1rem;">
+                   <i class="fas fa-home"></i> Volver al Inicio
+               </a>
+               <a href="all-courses.php" class="btn-browse">
+                   <i class="fas fa-plus"></i> Explorar Más Cursos
+               </a>
+           </div>
+       </div>
+   </section>
+
+   <!-- Footer -->
+   <footer class="footer">
+       <div class="container">
+           <p>&copy; 2024 El Profesor Hernán. Todos los derechos reservados.</p>
+           <div class="footer-links">
+               <a href="home.php">Inicio</a>
+               <a href="home.php">Cursos</a>
+               <a href="cart.php">Carrito</a>
+               <a href="purchase-history.php">Mis Cursos</a>
+           </div>
+           <p>Aprende inglés con los mejores cursos online</p>
+       </div>
+   </footer>
+
+   <!-- Scripts -->
+   <script>
+       function switchTab(tabName) {
+           // Ocultar todas las pestañas
+           document.querySelectorAll('.tab-content').forEach(tab => {
+               tab.classList.remove('active');
+           });
+           
+           // Remover clase active de todos los botones
+           document.querySelectorAll('.tab-button').forEach(button => {
+               button.classList.remove('active');
+           });
+           
+           // Mostrar la pestaña seleccionada
+           document.getElementById(tabName + '-tab').classList.add('active');
+           
+           // Activar el botón correspondiente
+           event.target.classList.add('active');
+       }
+
+       // Animaciones al cargar la página
+       document.addEventListener('DOMContentLoaded', function() {
+           // Animar las tarjetas de estadísticas
+           const statCards = document.querySelectorAll('.stat-card');
+           statCards.forEach((card, index) => {
+               setTimeout(() => {
+                   card.style.opacity = '0';
+                   card.style.transform = 'translateY(20px)';
+                   card.style.transition = 'all 0.5s ease';
+                   
+                   setTimeout(() => {
+                       card.style.opacity = '1';
+                       card.style.transform = 'translateY(0)';
+                   }, 100);
+               }, index * 100);
+           });
+
+           // Animar las tarjetas de cursos
+           const courseCards = document.querySelectorAll('.course-card');
+           courseCards.forEach((card, index) => {
+               setTimeout(() => {
+                   card.style.opacity = '0';
+                   card.style.transform = 'translateY(20px)';
+                   card.style.transition = 'all 0.5s ease';
+                   
+                   setTimeout(() => {
+                       card.style.opacity = '1';
+                       card.style.transform = 'translateY(0)';
+                   }, 100);
+               }, index * 150);
+           });
+       });
+   </script>
+</body>
+</html>
