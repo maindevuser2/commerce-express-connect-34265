@@ -595,8 +595,7 @@ function populateBookModal(book) {
     // Precio original
     const originalPriceEl = document.getElementById('modalBookOriginalPrice');
     if (book.original_price && parseFloat(book.original_price) > parseFloat(book.price)) {
-        originalPriceEl.textContent = `$${parseFloat(book.original_price).toFixed(2)}`;
-        originalPriceEl.style.display = 'inline';
+        originalPriceEl.style.display = 'none';
     } else {
         originalPriceEl.style.display = 'none';
     }
@@ -610,24 +609,6 @@ function populateBookModal(book) {
             <div class="book-meta-item">
                 <div class="book-meta-label">Categoría</div>
                 <div class="book-meta-value">${book.category}</div>
-            </div>
-        `;
-    }
-    
-    if (book.pages) {
-        metaHTML += `
-            <div class="book-meta-item">
-                <div class="book-meta-label">Páginas</div>
-                <div class="book-meta-value">${book.pages}</div>
-            </div>
-        `;
-    }
-    
-    if (book.rating && parseFloat(book.rating) > 0) {
-        metaHTML += `
-            <div class="book-meta-item">
-                <div class="book-meta-label">Calificación</div>
-                <div class="book-meta-value">${parseFloat(book.rating).toFixed(1)}/5</div>
             </div>
         `;
     }

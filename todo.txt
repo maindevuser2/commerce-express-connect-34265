@@ -1,2 +1,3 @@
 1. Resolver el problema de recuperar contraseña.
 2. Css de profile en cliente.
+3. Resolver los problemas relacionados con los libros.

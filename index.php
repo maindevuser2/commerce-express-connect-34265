@@ -337,11 +337,6 @@ try {
                                         <i class="fas fa-book"></i>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($book['original_price'] && $book['original_price'] > $book['price']): ?>
-                                    <div class="showcase-discount-badge">
-                                        -<?php echo round((($book['original_price'] - $book['price']) / $book['original_price']) * 100); ?>%
-                                    </div>
-                                <?php endif; ?>
                             </div>
                             <div class="book-showcase-info">
                                 <div class="book-showcase-category"><?php echo htmlspecialchars($book['category']); ?></div>
@@ -349,9 +344,6 @@ try {
                                 <p class="book-showcase-author">por <?php echo htmlspecialchars($book['author']); ?></p>
                                 <div class="book-showcase-price">
                                     <span class="showcase-current-price">$<?php echo number_format($book['price'], 2); ?></span>
-                                    <?php if ($book['original_price'] && $book['original_price'] > $book['price']): ?>
-                                        <span class="showcase-original-price">$<?php echo number_format($book['original_price'], 2); ?></span>
-                                    <?php endif; ?>
                                 </div>
                                 <button class="btn-showcase-details" onclick="showBookDetails(<?php echo $book['id']; ?>)">
                                     <i class="fas fa-info-circle"></i> Ver Detalles
@@ -645,8 +637,7 @@ try {
             // Precio original
             const originalPriceEl = document.getElementById('modalBookOriginalPrice');
             if (book.original_price && parseFloat(book.original_price) > parseFloat(book.price)) {
-                originalPriceEl.textContent = `$${parseFloat(book.original_price).toFixed(2)}`;
-                originalPriceEl.style.display = 'inline';
+                originalPriceEl.style.display = 'none';
             } else {
                 originalPriceEl.style.display = 'none';
             }
@@ -660,24 +651,6 @@ try {
                     <div class="book-meta-item">
                         <div class="book-meta-label">Categoría</div>
                         <div class="book-meta-value">${book.category}</div>
-                    </div>
-                `;
-            }
-            
-            if (book.pages) {
-                metaHTML += `
-                    <div class="book-meta-item">
-                        <div class="book-meta-label">Páginas</div>
-                        <div class="book-meta-value">${book.pages}</div>
-                    </div>
-                `;
-            }
-            
-            if (book.rating && parseFloat(book.rating) > 0) {
-                metaHTML += `
-                    <div class="book-meta-item">
-                        <div class="book-meta-label">Calificación</div>
-                        <div class="book-meta-value">${parseFloat(book.rating).toFixed(1)}/5</div>
                     </div>
                 `;
             }
