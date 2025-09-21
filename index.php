@@ -316,7 +316,7 @@ try {
                 $database = new \Database();
                 $db = $database->getConnection();
                 $bookModel = new \Models\Book($db);
-
+                $featuredBooks = $bookModel->getFeatured(6); // Obtener máximo 6 libros destacados
             } catch (Exception $e) {
                 $featuredBooks = [];
                 error_log("Error cargando libros en index.php: " . $e->getMessage());
