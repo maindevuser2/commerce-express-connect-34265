@@ -585,7 +585,12 @@ function populateBookModal(book) {
     // Imagen de portada
     const coverImg = document.getElementById('modalBookCover');
     if (book.cover_image) {
-        coverImg.src = `../../${book.cover_image}`;
+        // Si la imagen ya tiene el prefijo público, solo agregar ../../
+        if (book.cover_image.startsWith('public/')) {
+            coverImg.src = `../../${book.cover_image}`;
+        } else {
+            coverImg.src = `../../public/${book.cover_image}`;
+        }
         coverImg.alt = book.title;
     } else {
         coverImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDIwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTI1QzEwNS41MjMgMTI1IDExMCAxMjAuNTIzIDExMCAxMTVDMTEwIDEwOS40NzcgMTA1LjUyMyAxMDUgMTAwIDEwNUM5NC40NzcgMTA1IDkwIDEwOS40NzcgOTAgMTE1QzkwIDEyMC41MjMgOTQuNDc3IDEyNSAxMDAgMTI1WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';

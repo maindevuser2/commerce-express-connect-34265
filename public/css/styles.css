@@ -162,6 +162,15 @@ body {
   background-color: #e67e22;
 }
 
+.btn-profile {
+  background-color: var(--blue-color);
+  color: white;
+}
+
+.btn-profile:hover {
+  background-color: #4aa8d8;
+}
+
 .btn-logout {
   background-color: #e74c3c;
   color: white;

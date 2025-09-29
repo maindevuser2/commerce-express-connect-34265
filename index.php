@@ -598,7 +598,7 @@ try {
             document.getElementById('modalBookTitleFull').textContent = 'Cargando...';
             
             // Hacer petición AJAX para obtener detalles
-            fetch(`controllers/BookController.php?action=details&id=${bookId}`)
+            fetch(`./controllers/BookController.php?action=details&id=${bookId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.status === 'success') {
@@ -627,7 +627,12 @@ try {
             // Imagen de portada
             const coverImg = document.getElementById('modalBookCover');
             if (book.cover_image) {
-                coverImg.src = book.cover_image;
+                // Si la imagen ya tiene el prefijo public/, no lo agregues de nuevo
+                if (book.cover_image.startsWith('public/')) {
+                    coverImg.src = book.cover_image;
+                } else {
+                    coverImg.src = `public/${book.cover_image}`;
+                }
                 coverImg.alt = book.title;
             } else {
                 coverImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDIwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTI1QzEwNS41MjMgMTI1IDExMCAxMjAuNTIzIDExMCAxMTVDMTEwIDEwOS40NzcgMTA1LjUyMyAxMDUgMTAwIDEwNUM5NC40NzcgMTA1IDkwIDEwOS40NzcgOTAgMTE1QzkwIDEyMC41MjMgOTQuNDc3IDEyNSAxMDAgMTI1WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
