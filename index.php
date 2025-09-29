@@ -598,11 +598,11 @@ try {
             document.getElementById('modalBookTitleFull').textContent = 'Cargando...';
             
             // Hacer petición AJAX para obtener detalles
-            fetch(`index.php?page=admin&action=books&book_action=details&id=${bookId}`)
+            fetch(`controllers/BookController.php?action=details&id=${bookId}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && !data.error) {
-                        populateBookModal(data);
+                    if (data && data.status === 'success') {
+                        populateBookModal(data.book);
                     } else {
                         alert('Error al cargar los detalles del libro');
                         closeBookModal();

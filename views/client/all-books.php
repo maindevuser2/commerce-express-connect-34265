@@ -336,19 +336,68 @@ $totalPages = ceil($totalBooks / $per_page);
     <script>
         // Función para mostrar detalles del libro en modal
         function showBookDetails(bookId) {
-            // Aquí puedes implementar la lógica para cargar los detalles del libro
-            // Por ahora, mostraremos un mensaje básico
             document.getElementById('modalBookTitle').textContent = 'Cargando...';
             document.getElementById('modalBookContent').innerHTML = '<div class="loading">Cargando detalles del libro...</div>';
             document.getElementById('bookModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
             
-            // En una implementación real, harías una petición AJAX aquí
-            // fetch(`/api/book/${bookId}`).then(...)
+            // Hacer petición AJAX para obtener detalles
+            fetch(`../../controllers/BookController.php?action=details&id=${bookId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        populateBookModal(data.book);
+                    } else {
+                        alert('Error al cargar los detalles del libro');
+                        closeBookModal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al cargar los detalles del libro');
+                    closeBookModal();
+                });
+        }
+
+        // Función para poblar el modal con datos del libro
+        function populateBookModal(book) {
+            document.getElementById('modalBookTitle').textContent = book.title;
+            
+            const modalContent = document.getElementById('modalBookContent');
+            modalContent.innerHTML = `
+                <div class="book-details-grid">
+                    <div class="book-details-cover">
+                        <img src="${book.cover_image ? '../../' + book.cover_image : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDIwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgMTI1QzEwNS41MjMgMTI1IDExMCAxMjAuNTIzIDExMCAxMTVDMTEwIDEwOS40NzcgMTA1LjUyMyAxMDUgMTAwIDEwNUM5NC40NzcgMTA1IDkwIDEwOS40NzcgOTAgMTE1QzkwIDEyMC41MjMgOTQuNDc3IDEyNSAxMDAgMTI1WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K'}" alt="${book.title}">
+                    </div>
+                    <div class="book-details-info">
+                        <h2>${book.title}</h2>
+                        <p class="book-details-author">por ${book.author}</p>
+                        <div class="book-details-price">
+                            <span class="book-details-current-price">$${parseFloat(book.price).toFixed(2)}</span>
+                        </div>
+                        <div class="book-details-meta">
+                            ${book.category ? `<div class="book-meta-item"><div class="book-meta-label">Categoría</div><div class="book-meta-value">${book.category}</div></div>` : ''}
+                            ${book.publication_date ? `<div class="book-meta-item"><div class="book-meta-label">Publicación</div><div class="book-meta-value">${new Date(book.publication_date).getFullYear()}</div></div>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="book-description">
+                    <h3>Descripción</h3>
+                    <p>${book.description || 'Sin descripción disponible.'}</p>
+                </div>
+                <div class="book-modal-actions">
+                    <a href="${book.amazon_url}" target="_blank" class="btn-buy-amazon">
+                        <i class="fab fa-amazon"></i>
+                        Comprar en Amazon
+                    </a>
+                </div>
+            `;
         }
 
         // Función para cerrar el modal
         function closeBookModal() {
             document.getElementById('bookModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         // Cerrar modal al hacer clic fuera de él
