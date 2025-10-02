@@ -122,6 +122,7 @@ body {
 .btn-login,
 .btn-signup,
 .btn-admin,
+.btn-profile,
 .btn-logout {
   padding: 8px 16px;
   border-radius: 5px;

@@ -32,7 +32,7 @@ if (!$book) {
         <div class="header-container">
             <div class="logo">
                 <img src="../../public/img/logo-profe-hernan.png" alt="Logo Profe Hernán">
-                <span>Profe Hernán</span>
+                <span>El Profe Hernán</span>
             </div>
             <nav class="main-nav">
                 <a href="home.php">Inicio</a>
