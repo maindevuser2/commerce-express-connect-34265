@@ -1,31 +1,23 @@
-/* TODO */
-.profile-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+/* Profile Page Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.profile-header {
+body {
+    font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    text-align: center;
-    margin-bottom: 2rem;
+    min-height: 100vh;
+    padding: 2rem 0;
 }
 
-.profile-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 0 auto 1rem;
+.profile-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
+
 
 .profile-sections {
     display: grid;
@@ -63,12 +55,114 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #667eea;
+    color: white;
     text-decoration: none;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
 .back-link:hover {
-    color: #764ba2;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+/* Forms */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i:first-child {
+    position: absolute;
+    left: 1rem;
+    color: #667eea;
+    font-size: 1rem;
+}
+
+.input-with-icon .toggle-password {
+    position: absolute;
+    right: 1rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.input-with-icon .toggle-password:hover {
+    color: #667eea;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-full {
+    width: 100%;
 }

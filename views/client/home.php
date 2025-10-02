@@ -337,9 +337,9 @@ $userDisplayName = getUserDisplayName($currentUser);
                                 <div class="book-showcase-price">
                                     <span class="showcase-current-price">$<?php echo number_format($book['price'], 2); ?></span>
                                 </div>
-                                <button class="btn-showcase-details" onclick="showBookDetails(<?php echo $book['id']; ?>)">
+                                <a href="book-detail.php?id=<?php echo $book['id']; ?>" class="btn-showcase-details">
                                     <i class="fas fa-info-circle"></i> Ver Detalles
-                                </button>
+                                </a>
                             </div>
                         </div>
                     <?php endforeach; ?>
