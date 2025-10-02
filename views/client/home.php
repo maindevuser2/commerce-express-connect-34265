@@ -580,7 +580,12 @@ function populateBookModal(book) {
     document.getElementById('modalBookAuthor').textContent = `por ${book.author}`;
     document.getElementById('modalBookPrice').textContent = `$${parseFloat(book.price).toFixed(2)}`;
     document.getElementById('modalBookDescription').textContent = book.description || 'Sin descripción disponible.';
-    document.getElementById('modalAmazonLink').href = book.amazon_url; 
+    
+    // Enlace de Amazon con target="_blank"
+    const amazonLink = document.getElementById('modalAmazonLink');
+    amazonLink.href = book.amazon_url;
+    amazonLink.target = '_blank';
+    amazonLink.rel = 'noopener noreferrer';
     
     // Imagen de portada
     const coverImg = document.getElementById('modalBookCover');

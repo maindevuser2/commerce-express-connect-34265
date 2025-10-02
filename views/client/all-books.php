@@ -224,9 +224,9 @@ $totalPages = ceil($totalBooks / $per_page);
                                 </div>
                                 
                                 <div class="book-actions">
-                                    <button class="btn-details" onclick="showBookDetails(<?php echo $book['id']; ?>)">
+                                    <a href="book-detail.php?id=<?php echo $book['id']; ?>" class="btn-details">
                                         <i class="fas fa-info-circle"></i> Ver Detalles
-                                    </button>
+                                    </a>
                                     <?php if (!empty($book['amazon_url'])): ?>
                                         <a href="<?php echo htmlspecialchars($book['amazon_url']); ?>" 
                                            target="_blank" rel="noopener noreferrer" class="btn-amazon">
@@ -289,21 +289,6 @@ $totalPages = ceil($totalBooks / $per_page);
         </div>
     </section>
 
-    <!-- Book Details Modal -->
-    <div id="bookModal" class="book-modal">
-        <div class="book-modal-content">
-            <div class="book-modal-header">
-                <h2 id="modalBookTitle">Detalles del Libro</h2>
-                <button class="book-modal-close" onclick="closeBookModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="book-modal-body" id="modalBookContent">
-                <!-- El contenido se carga dinámicamente -->
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -332,88 +317,5 @@ $totalPages = ceil($totalBooks / $per_page);
             </div>
         </div>
     </footer>
-
-    <script>
-        // Función para mostrar detalles del libro en modal
-        function showBookDetails(bookId) {
-            document.getElementById('modalBookTitle').textContent = 'Cargando...';
-            document.getElementById('modalBookContent').innerHTML = '<div class="loading">Cargando detalles del libro...</div>';
-            document.getElementById('bookModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            
-            // Hacer petición AJAX para obtener detalles
-            fetch(`../../controllers/BookController.php?action=details&id=${bookId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        populateBookModal(data.book);
-                    } else {
-                        alert('Error al cargar los detalles del libro');
-                        closeBookModal();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al cargar los detalles del libro');
-                    closeBookModal();
-                });
-        }
-
-        // Función para poblar el modal con datos del libro
-        function populateBookModal(book) {
-            document.getElementById('modalBookTitle').textContent = book.title;
-            
-            const modalContent = document.getElementById('modalBookContent');
-            modalContent.innerHTML = `
-                <div class="book-details-grid">
-                    <div class="book-details-cover">
-                        <img src="${book.cover_image}" alt="${book.title}">
-                    </div>
-                    <div class="book-details-info">
-                        <h2>${book.title}</h2>
-                        <p class="book-details-author">por ${book.author}</p>
-                        <div class="book-details-price">
-                            <span class="book-details-current-price">$${parseFloat(book.price).toFixed(2)}</span>
-                        </div>
-                        <div class="book-details-meta">
-                            ${book.category ? `<div class="book-meta-item"><div class="book-meta-label">Categoría</div><div class="book-meta-value">${book.category}</div></div>` : ''}
-                            ${book.publication_date ? `<div class="book-meta-item"><div class="book-meta-label">Publicación</div><div class="book-meta-value">${new Date(book.publication_date).getFullYear()}</div></div>` : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="book-description">
-                    <h3>Descripción</h3>
-                    <p>${book.description || 'Sin descripción disponible.'}</p>
-                </div>
-                <div class="book-modal-actions">
-                    <a href="${book.amazon_url}" target="_blank" class="btn-buy-amazon">
-                        <i class="fab fa-amazon"></i>
-                        Comprar en Amazon
-                    </a>
-                </div>
-            `;
-        }
-
-        // Función para cerrar el modal
-        function closeBookModal() {
-            document.getElementById('bookModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Cerrar modal al hacer clic fuera de él
-        window.onclick = function(event) {
-            const modal = document.getElementById('bookModal');
-            if (event.target === modal) {
-                closeBookModal();
-            }
-        }
-
-        // Cerrar modal con la tecla Escape
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeBookModal();
-            }
-        });
-    </script>
 </body>
 </html>
