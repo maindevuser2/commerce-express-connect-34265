@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-09-2025 a las 19:15:36
+-- Tiempo de generación: 02-10-2025 a las 17:47:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -44,40 +44,14 @@ CREATE TABLE `books` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `email_logs`
+-- Volcado de datos para la tabla `books`
 --
 
-CREATE TABLE `email_logs` (
-  `id` int(11) NOT NULL,
-  `to_email` varchar(255) NOT NULL,
-  `subject` varchar(500) NOT NULL,
-  `body` text DEFAULT NULL,
-  `email_type` varchar(50) DEFAULT 'general',
-  `status` enum('sent','failed','pending') NOT NULL DEFAULT 'pending',
-  `error_message` text DEFAULT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `sent_at` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `login_attempts`
---
-
-CREATE TABLE `login_attempts` (
-  `id` int(11) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `user_agent` text DEFAULT NULL,
-  `success` tinyint(1) NOT NULL DEFAULT 0,
-  `failure_reason` varchar(100) DEFAULT NULL,
-  `attempted_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `books` (`id`, `title`, `author`, `description`, `cover_image`, `price`, `amazon_url`, `category`, `publication_date`, `is_featured`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
+(2, 'The Elements of Style', 'William Strunk Jr.', 'Una guía concisa y autoritaria sobre la escritura en inglés. Este clásico libro es esencial para cualquier persona que quiera escribir con claridad y estilo.', 'https://m.media-amazon.com/images/I/51oqf+sYttL._UX300undefined_.jpg', 12.99, 'https://www.amazon.com/Elements-Style-Fourth-William-Strunk/dp/020530902X', 'Writing', '2000-01-01', 1, 1, 2, '2025-09-21 04:55:46', '2025-09-21 14:19:30'),
+(12, 'English Grammar in Use', 'Raymond Murphy', 'El libro de gramática inglesa más vendido del mundo. Perfecto para estudiantes de nivel intermedio que quieren mejorar su gramática y precisión.', 'https://m.media-amazon.com/images/I/41gL7EIGFWL._SY445_SX342_ControlCacheEqualizer_.jpg', 29.99, 'https://www.amazon.com/Secret-Secrets-Novel-Robert-Langdon/dp/0385546890/ref=sr_1_5?adgrpid=142337597986&amp;amp;amp;amp;amp;dib=eyJ2IjoiMSJ9.xYMIPW2JeAXjJPBHf9s8zgSn1IAZ2sKIqmRIoVWd8NMwGbzwKiJUhKYJG8hyyY61v0nE1GMrR5jdxwVLri9TEjPkmC-qlQ_VCp4yE2s-I4Y2pvnmOhCIECy8LCHdgw8LQjXgKDQ3-r0VPQ3LUlrUVFvQOiUmmrpac5b6rzSA9WYIv6Wrch_otyLPWDCRUllRSqVgNoRlqp3sqVnw1yXW0vcCSMVmLJfYUFcz81IxRxfnJQ9UnTaCVsNanCkK-_eVtU4eox9iep8YcOTqUpSaZL3LjV78fH_yK29iIHkUmKo.rZfOXQkJGHkJahwm-uPsZ5AraT6Kr7Mu9Guo4O2QrIw&amp;amp;amp;amp;amp;dib_tag=se&amp;amp;amp;amp;amp;hvadid=673108216047&amp;amp;amp;amp;amp;hvdev=c&amp;amp;amp;amp;amp;hvlocphy=9210589&amp;amp;amp;amp;amp;hvnetw=g&amp;amp;amp;amp;amp;hvqmt=e&amp;amp;amp;amp;amp;hvrand=836351706794811641&amp;amp;amp;amp;amp;hvtargid=kwd-28771621&amp;amp;amp;amp;amp;hydadcr=16205_13697387&amp;amp;amp;amp;amp;keywords=amazon+books&amp;amp;amp;amp;amp;mcid=4e3b55edb6ff3fad926ee266920dd6e6&amp;amp;amp;amp;amp;qid=1758451614&amp;amp;amp;amp;amp;sr=8-5', 'Grammar', '2019-01-01', 1, 1, 1, '2025-09-21 05:37:13', '2025-09-21 14:31:27'),
+(21, 'The Frozen River: A GMA Book Club Pick: A Novel', 'Ariel Lawhon', 'NEW YORK TIMES BESTSELLER • GMA BOOK CLUB PICK • AN NPR BOOK OF THE YEAR • From the New York Times bestselling author of I Was Anastasia and Code Name Hélène comes a gripping historical mystery inspired by the life and diary of Martha Ballard, a renowned 18th-century midwife who defied the legal system and wrote herself into American history.\r\n\r\n&amp;amp;amp;amp;quot;Fans of Outlander’s Claire Fraser will enjoy Lawhon’s Martha, who is brave and outspoken when it comes to protecting the innocent. . . impressive.&amp;amp;amp;amp;quot;—The Washington Post\r\n\r\n&amp;amp;amp;amp;quot;Once again, Lawhon works storytelling magic with a real-life heroine.&amp;amp;amp;amp;quot; —People Magazine', 'https://m.media-amazon.com/images/I/91ulu+khYLL._AC_UL480_FMwebp_QL65_.jpg', 11.00, 'https://www.amazon.com/Frozen-River-Book-Club-Novel/dp/0593312074/ref=sr_1_7?adgrpid=142337597986&amp;amp;amp;amp;amp;dib=eyJ2IjoiMSJ9.xYMIPW2JeAXjJPBHf9s8zrZUECRMDN54zOiFMnLoVfYrku-yInnvsQj3yqS9k4Hgd3NycBQ-DBbqG1VzeAP4DjPkmC-qlQ_VCp4yE2s-I4Y2pvnmOhCIECy8LCHdgw8LQjXgKDQ3-r0VPQ3LUlrUVFyScxuTAmVGLJkWoYUOkzF7eVYy0tQ18K5Qzn4MY2ECmuYpeIQ0r90Lfo9xpu9y78gkojzXXu3BrTd9IqrMF_vnJQ9UnTaCVsNanCkK-_eVtU4eox9iep8YcOTqUpSaZH3RXYSjPC8H76C1fMIPfN8.vcjvHi9YzOh54ptFV41bFoAw4Qf0wQeRIjbgVxLoUt8&amp;amp;amp;amp;amp;dib_tag=se&amp;amp;amp;amp;amp;hvadid=630312117108&amp;amp;amp;amp;amp;hvdev=c&amp;amp;amp;amp;amp;hvlocphy=9210589&amp;amp;amp;amp;amp;hvnetw=g&amp;amp;amp;amp;amp;hvqmt=e&amp;amp;amp;amp;amp;hvrand=17435365937107481730&amp;amp;amp;amp;amp;hvtargid=kwd-28771621&amp;amp;amp;amp;amp;hydadcr=16205_13567626&amp;amp;amp;amp;amp;keywords=amazon+books&amp;amp;amp;amp;amp;mcid=4e3b55edb6ff3fad926ee266920dd6e6&amp;amp;amp;amp;amp;qid=1758482412&amp;amp;amp;amp;amp;sr=8-7', 'English Learning', '2024-11-05', 1, 1, 1, '2025-09-21 14:21:59', '2025-10-02 10:08:17');
 
 -- --------------------------------------------------------
 
@@ -100,6 +74,15 @@ CREATE TABLE `orders` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `transaction_id`, `amount`, `currency`, `status`, `payment_method`, `payment_intent_id`, `stripe_session_id`, `notes`, `processed_at`, `created_at`, `updated_at`) VALUES
+(1, 2, 'ch_3S9jSmEIqBlXSQrI15A703QT', 1.07, 'usd', 'completed', 'stripe', NULL, NULL, NULL, NULL, '2025-09-21 04:21:50', '2025-09-21 04:21:50');
+
+-- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `password_resets`
@@ -215,6 +198,7 @@ CREATE TABLE `users` (
   `last_name` varchar(100) NOT NULL,
   `role` enum('user','admin') DEFAULT 'user',
   `is_active` tinyint(1) DEFAULT 1,
+  `google_id` varchar(255) DEFAULT NULL,
   `last_login` datetime DEFAULT NULL,
   `email_verified` tinyint(1) DEFAULT 0,
   `failed_login_attempts` int(11) DEFAULT 0,
@@ -228,9 +212,9 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `role`, `is_active`, `last_login`, `email_verified`, `failed_login_attempts`, `locked_until`, `password_changed_at`, `created_at`, `updated_at`) VALUES
-(1, 'bedoyaalberth@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Admin', 'User', 'admin', 1, NULL, '2025-09-21 05:44:09', 1, 0, NULL, NULL, '2025-09-21 07:55:30', '2025-09-21 05:44:09'),
-(2, 'maindevuser@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Test', 'User', 'user', 1, NULL, '2025-09-21 06:14:15', 0, 0, NULL, NULL, '2025-09-21 02:58:58', '2025-09-21 06:14:15');
+INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `role`, `is_active`, `google_id`, `last_login`, `email_verified`, `failed_login_attempts`, `locked_until`, `password_changed_at`, `created_at`, `updated_at`) VALUES
+(1, 'bedoyaalberth@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Admin', 'User', 'admin', 1, NULL, '2025-10-02 10:07:53', 1, 0, NULL, NULL, '2025-09-21 07:55:30', '2025-10-02 10:07:53'),
+(2, 'maindevuser@gmail.com', '$2y$10$y0uggZCDnBo9hTsY8mTefOgLIC.UtD2dZL/6/.m5Tp702Rb7nM.JO', 'Alberth', 'User', 'user', 1, NULL, '2025-10-02 10:39:20', 0, 0, NULL, NULL, '2025-09-21 02:58:58', '2025-10-02 10:39:20');
 
 -- --------------------------------------------------------
 
@@ -402,28 +386,6 @@ ALTER TABLE `books`
   ADD KEY `idx_display_order` (`display_order`);
 
 --
--- Indices de la tabla `email_logs`
---
-ALTER TABLE `email_logs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_to_email` (`to_email`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_email_type` (`email_type`),
-  ADD KEY `idx_sent_at` (`sent_at`),
-  ADD KEY `idx_created_at` (`created_at`);
-
---
--- Indices de la tabla `login_attempts`
---
-ALTER TABLE `login_attempts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_email_attempted` (`email`,`attempted_at`),
-  ADD KEY `idx_ip_attempted` (`ip_address`,`attempted_at`),
-  ADD KEY `idx_success` (`success`),
-  ADD KEY `idx_attempted_at` (`attempted_at`),
-  ADD KEY `idx_login_attempts_email_time` (`email`,`attempted_at`,`success`);
-
---
 -- Indices de la tabla `orders`
 --
 ALTER TABLE `orders`
@@ -566,19 +528,7 @@ ALTER TABLE `video_files`
 -- AUTO_INCREMENT de la tabla `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT de la tabla `email_logs`
---
-ALTER TABLE `email_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `login_attempts`
---
-ALTER TABLE `login_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `orders`
