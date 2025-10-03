@@ -7,9 +7,11 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Incluir dependencias
 require_once __DIR__ . '/../../controllers/CartController.php';
+require_once __DIR__ . '/../../controllers/SyncClassController.php';
 require_once __DIR__ . '/../../controllers/AuthController.php';
 
 use Controllers\CartController;
+use Controllers\SyncClassController;
 use Controllers\AuthController;
 
 // Verificar autenticación
@@ -18,10 +20,18 @@ if (!AuthController::isAuthenticated()) {
     exit();
 }
 
-// Inicializar controlador del carrito
+// Inicializar controladores
 $cartController = new CartController();
+$syncClassController = new SyncClassController();
+
+// Obtener items del carrito
 $cart_items = $cartController->getCartItems();
-$totals = $cartController->calculateTotals($cart_items);
+$sync_class_items = $syncClassController->getCartItems();
+
+// Combinar items para cálculo de totales
+$all_items = array_merge($cart_items, $sync_class_items);
+$totals = $cartController->calculateTotals($all_items);
+
 $currentUser = AuthController::getCurrentUser();
 ?>
 
@@ -40,16 +50,16 @@ $currentUser = AuthController::getCurrentUser();
         <div class="container">
             <h1><i class="fas fa-shopping-cart"></i> Mi Carrito</h1>
             <p>Revisa y gestiona tus cursos seleccionados</p>
-            <?php if (!empty($cart_items)): ?>
+            <?php if (!empty($all_items)): ?>
                 <div class="cart-badge">
-                    <i class="fas fa-graduation-cap"></i> <?php echo count($cart_items); ?> curso<?php echo count($cart_items) > 1 ? 's' : ''; ?> seleccionado<?php echo count($cart_items) > 1 ? 's' : ''; ?>
+                    <i class="fas fa-graduation-cap"></i> <?php echo count($all_items); ?> item<?php echo count($all_items) > 1 ? 's' : ''; ?> seleccionado<?php echo count($all_items) > 1 ? 's' : ''; ?>
                 </div>
             <?php endif; ?>
         </div>
     </div>
 
     <div class="container">
-        <?php if (empty($cart_items)): ?>
+        <?php if (empty($all_items)): ?>
             <div class="empty-cart">
                 <div class="empty-cart-icon">
                     <i class="fas fa-shopping-cart"></i>
@@ -65,7 +75,7 @@ $currentUser = AuthController::getCurrentUser();
                 <div class="cart-items">
                     <h3 class="section-title">
                         <i class="fas fa-list"></i>
-                        Cursos Seleccionados
+                        Items Seleccionados
                     </h3>
                     
                     <?php foreach ($cart_items as $item): ?>
@@ -88,6 +98,35 @@ $currentUser = AuthController::getCurrentUser();
                             
                             <div class="item-actions">
                                 <button onclick="removeFromCart(<?php echo $item['id']; ?>)" class="btn-remove">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                    
+                    <?php foreach ($sync_class_items as $item): ?>
+                        <div class="cart-item" style="border-left: 4px solid #667eea;">
+                            <div class="item-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-video" style="font-size: 3rem; color: white;"></i>
+                            </div>
+                            
+                            <div class="item-details">
+                                <h4 class="item-title">
+                                    <i class="fas fa-video"></i> <?php echo htmlspecialchars($item['title']); ?>
+                                </h4>
+                                <span class="item-level" style="background: #667eea;">Clase Sincrónica</span>
+                                <?php if (!empty($item['description'])): ?>
+                                    <p class="item-description"><?php echo htmlspecialchars(substr($item['description'], 0, 120)) . '...'; ?></p>
+                                <?php endif; ?>
+                                <p class="item-description">
+                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y H:i', strtotime($item['start_date'])); ?> - 
+                                    <?php echo date('d M Y H:i', strtotime($item['end_date'])); ?>
+                                </p>
+                                <div class="item-price">$<?php echo number_format($item['price'], 2); ?></div>
+                            </div>
+                            
+                            <div class="item-actions">
+                                <button onclick="removeSyncClassFromCart(<?php echo $item['id']; ?>)" class="btn-remove">
                                     <i class="fas fa-trash-alt"></i> Eliminar
                                 </button>
                             </div>
@@ -158,6 +197,30 @@ $currentUser = AuthController::getCurrentUser();
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error al eliminar el curso');
+                });
+            }
+        }
+
+        function removeSyncClassFromCart(classId) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta clase del carrito?')) {
+                fetch('../../controllers/SyncClassController.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=remove&id=${classId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error al eliminar la clase');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar la clase');
                 });
             }
         }

@@ -1,3 +1,3 @@
-1. Resolver el problema de recuperar contraseña.
-2. Css de profile en cliente.
-3. Resolver los problemas relacionados con los libros.
+1. FIX: Problema de recuperar contraseña.
+2. FIX: URL de Comprar en amazon. (Seccion de libros en index.php)
+3. FIX: Filtros en all-books.php

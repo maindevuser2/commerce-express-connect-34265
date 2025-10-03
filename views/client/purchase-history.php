@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../models/Order.php';
 require_once __DIR__ . '/../../models/UserCourse.php';
 require_once __DIR__ . '/../../models/Playlist.php';
+require_once __DIR__ . '/../../models/UserSyncClass.php';
 require_once __DIR__ . '/../../controllers/CartController.php';
 
 // Usar los namespaces correctos
@@ -17,6 +18,7 @@ use Controllers\AuthController;
 use Models\Order;
 use Models\UserCourse;
 use Models\Playlist;
+use Models\UserSyncClass;
 use Controllers\CartController;
 
 // Verificar autenticación
@@ -38,12 +40,16 @@ $pdo = $database->getConnection();
 $orderModel = new Order($pdo);
 $userCourseModel = new UserCourse($pdo);
 $playlistModel = new Playlist($pdo);
+$userSyncClassModel = new UserSyncClass($pdo);
 
 // Obtener historial de pedidos del usuario
 $orders = $orderModel->readByUserId($userId);
 
 // Obtener cursos comprados del usuario con detalles completos
 $purchasedCourses = $userCourseModel->readByUserId($userId);
+
+// Obtener clases sincrónicas del usuario
+$purchasedSyncClasses = $userSyncClassModel->readByUserId($userId);
 
 // Obtener estadísticas del usuario
 try {
@@ -329,19 +335,66 @@ if ($firstAccessDate) {
                                     </div>
                                </div>
                            </div>
-                       <?php endforeach; ?>
-                   </div>
-               <?php else: ?>
-                   <div class="empty-state">
-                       <i class="fas fa-book-open"></i>
-                       <h3>Aún no tienes cursos</h3>
-                       <p>¡Comienza tu viaje de aprendizaje hoy! Explora nuestros cursos de inglés y encuentra el perfecto para ti.</p>
-                       <a href="cart.php" class="btn-browse">
-                           <i class="fas fa-search"></i> Explorar Cursos
-                       </a>
-                   </div>
-               <?php endif; ?>
-           </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <?php if (!empty($purchasedSyncClasses)): ?>
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem;"><i class="fas fa-video"></i> Mis Clases Sincrónicas</h3>
+                    <div class="courses-grid">
+                        <?php foreach ($purchasedSyncClasses as $syncClass): ?>
+                            <?php $isPast = strtotime($syncClass['end_date']) < time(); ?>
+                            <div class="course-card" style="border-left: 4px solid #667eea;">
+                                <div class="course-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                                    <div style="text-align: center; color: white;">
+                                        <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                                        <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
+                                    </div>
+                                    <div class="course-level" style="background-color: <?php echo $isPast ? '#6c757d' : '#28a745'; ?>">
+                                        <?php echo $isPast ? 'Finalizada' : 'Próxima'; ?>
+                                    </div>
+                                </div>
+                                <div class="course-content">
+                                    <h3 class="course-title"><?php echo htmlspecialchars($syncClass['title'] ?? 'Clase sin nombre'); ?></h3>
+                                    <p class="course-description">
+                                        <?php echo htmlspecialchars($syncClass['description'] ?: 'Clase sincrónica en vivo.'); ?>
+                                    </p>
+                                    <div class="course-meta">
+                                        <span><i class="fas fa-calendar"></i> Inicio: <?php echo date('d M Y H:i', strtotime($syncClass['start_date'])); ?></span>
+                                    </div>
+                                    <div class="course-meta">
+                                        <span><i class="fas fa-clock"></i> Fin: <?php echo date('d M Y H:i', strtotime($syncClass['end_date'])); ?></span>
+                                    </div>
+                                    <div class="course-meta">
+                                         <span class="course-price">$<?php echo number_format($syncClass['price'] ?? 0, 2); ?></span>
+                                         <span><i class="fas fa-check-circle" style="color: var(--teal-color);"></i> Acceso Completo</span>
+                                    </div>
+                                     <div class="course-actions">
+                                         <?php if ($isPast): ?>
+                                         <button class="btn-access" style="background: #6c757d; cursor: not-allowed;" disabled>
+                                             <i class="fas fa-clock"></i> Clase Finalizada
+                                         </button>
+                                         <?php else: ?>
+                                         <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="btn-access" style="background: #28a745;">
+                                             <i class="fas fa-video"></i> Unirse a la Clase
+                                         </a>
+                                         <?php endif; ?>
+                                     </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Aún no tienes cursos</h3>
+                        <p>¡Comienza tu viaje de aprendizaje hoy! Explora nuestros cursos de inglés y encuentra el perfecto para ti.</p>
+                        <a href="cart.php" class="btn-browse">
+                            <i class="fas fa-search"></i> Explorar Cursos
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
 
            <!-- Orders Tab -->
            <div id="orders-tab" class="tab-content">

@@ -91,6 +91,10 @@ if ($page === 'admin') {
             }
             break;
             
+        case 'sync-classes':
+            include __DIR__ . '/views/admin/sync-classes.php';
+            break;
+            
         case 'profile':
             include __DIR__ . '/views/admin/profile.php';
             break;
@@ -229,6 +233,57 @@ try {
             </div>
         </div>
     </section>
+
+    <!-- Sync Classes Section -->
+    <?php
+    // Obtener clases sincrónicas activas
+    try {
+        require_once __DIR__ . '/models/SyncClass.php';
+        $syncClassModel = new \Models\SyncClass($db);
+        $activeSyncClasses = $syncClassModel->readActive();
+        $featuredSyncClasses = array_slice($activeSyncClasses, 0, 3);
+    } catch (Exception $e) {
+        $featuredSyncClasses = [];
+        error_log("Error cargando clases sincrónicas: " . $e->getMessage());
+    }
+    ?>
+    
+    <?php if (!empty($featuredSyncClasses)): ?>
+    <section class="best-sellers" style="background: #f8f9fa;">
+        <div class="container">
+            <h2>Clases Sincrónicas</h2>
+            <p class="section-subtitle">Únete a nuestras clases en vivo y aprende en tiempo real con el profesor</p>
+
+            <div class="products-grid">
+                <?php foreach ($featuredSyncClasses as $syncClass): ?>
+                    <div class="product-card">
+                        <div class="product-tumb" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                            <div style="text-align: center; color: white;">
+                                <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                                <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
+                            </div>
+                        </div>
+                        <div class="product-details">
+                            <span class="product-catagory">
+                                <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?>
+                            </span>
+                            <h4><?php echo htmlspecialchars($syncClass['title']); ?></h4>
+                            <p><?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase sincrónica en vivo', 0, 100)); ?></p>
+                            <div class="product-bottom-details">
+                                <div class="product-price">$<?php echo htmlspecialchars(number_format($syncClass['price'], 2)); ?></div>
+                                <a href="login.php" class="add-to-cart-btn">Acceder</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="view-more">
+                <a href="login.php">Ver Todas las Clases <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- Levels Section -->
     <section class="courses">

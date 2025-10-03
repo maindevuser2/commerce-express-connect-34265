@@ -346,6 +346,42 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `sync_classes`
+--
+
+CREATE TABLE `sync_classes` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `meeting_link` varchar(1000) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `user_sync_classes`
+--
+
+CREATE TABLE `user_sync_classes` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `sync_class_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `access_granted_at` datetime DEFAULT current_timestamp(),
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `video_files`
 --
 
@@ -510,6 +546,27 @@ ALTER TABLE `videos`
 ALTER TABLE `videos` ADD FULLTEXT KEY `idx_search` (`title`,`description`);
 
 --
+-- Indices de la tabla `sync_classes`
+--
+ALTER TABLE `sync_classes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_start_date` (`start_date`),
+  ADD KEY `idx_end_date` (`end_date`),
+  ADD KEY `idx_is_active` (`is_active`),
+  ADD KEY `idx_created_at` (`created_at`);
+
+--
+-- Indices de la tabla `user_sync_classes`
+--
+ALTER TABLE `user_sync_classes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_sync_class` (`user_id`,`sync_class_id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_sync_class_id` (`sync_class_id`),
+  ADD KEY `idx_order_id` (`order_id`),
+  ADD KEY `idx_is_active` (`is_active`);
+
+--
 -- Indices de la tabla `video_files`
 --
 ALTER TABLE `video_files`
@@ -589,6 +646,18 @@ ALTER TABLE `user_video_progress`
 --
 ALTER TABLE `videos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `sync_classes`
+--
+ALTER TABLE `sync_classes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `user_sync_classes`
+--
+ALTER TABLE `user_sync_classes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `video_files`

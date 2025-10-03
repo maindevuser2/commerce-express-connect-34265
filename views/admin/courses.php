@@ -1573,7 +1573,6 @@ body {
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-graduation-cap"></i> Admin Panel</h2>
@@ -1587,6 +1586,9 @@ body {
                 </a>
                 <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=courses" class="nav-link">
                     <i class="fas fa-book"></i> Cursos
+                </a>
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=sync-classes" class="nav-link">
+                    <i class="fas fa-video"></i> Clases Sincrónicas
                 </a>
                 <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=orders" class="nav-link">
                     <i class="fas fa-shopping-cart"></i> Pedidos

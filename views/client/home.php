@@ -223,61 +223,73 @@ $userDisplayName = getUserDisplayName($currentUser);
         </div>
     </section>
 
-    <!-- Courses by Level Section -->
-    <section class="courses">
+    <!-- Sync Classes Section -->
+    <?php
+    // Obtener clases sincrónicas activas
+    try {
+        require_once __DIR__ . '/../../models/SyncClass.php';
+        require_once __DIR__ . '/../../models/UserSyncClass.php';
+        $syncClassModel = new \Models\SyncClass($db);
+        $userSyncClassModel = new \Models\UserSyncClass($db);
+        $activeSyncClasses = $syncClassModel->readActive();
+    } catch (Exception $e) {
+        $activeSyncClasses = [];
+        error_log("Error cargando clases sincrónicas: " . $e->getMessage());
+    }
+    ?>
+    
+    <section class="courses" style="background: #f8f9fa;">
         <div class="container">
-            <h2>Nuestros Cursos por Nivel</h2>
-            <p class="section-subtitle">Encuentra el curso perfecto para tu nivel actual y avanza con confianza.</p>
+            <h2>Clases Sincrónicas</h2>
+            <p class="section-subtitle">Únete a nuestras clases en vivo y aprende en tiempo real con el profesor</p>
+            
+            <?php if (!empty($activeSyncClasses)): ?>
             <div class="courses-grid">
-                <?php 
-                $level_colors = [
-                    'A1' => 'var(--teal-color)',
-                    'A2' => 'var(--blue-color)',
-                    'B1' => 'var(--orange-color)',
-                    'B2' => 'var(--red-color)',
-                    'C1' => 'var(--purple-color)',
-                    'Mixto' => 'var(--secondary-color)'
-                ];
-                ?>
-                <?php foreach ($sorted_playlists_by_level as $level => $playlists): ?>
-                    <?php if (!empty($playlists)): ?>
-                        <?php $playlist = $playlists[0]; // Tomar el primer curso de cada nivel para la tarjeta de nivel ?>
-                        <div class="course-card">
-                            <div class="level-badge neon-glow" style="background-color: <?php echo $level_colors[$level] ?? 'var(--secondary-color)'; ?>; color: white;">
-                                <?php echo htmlspecialchars($level); ?>
-                            </div>
-                            <div class="course-icon"><i class="fas fa-graduation-cap"></i></div>
-                            <h3 class="course-title">Nivel <?php echo htmlspecialchars($level); ?></h3>
-                            <p class="course-subtitle">Ideal para <?php 
-                                switch ($level) {
-                                    case 'A1': echo 'principiantes absolutos.'; break;
-                                    case 'A2': echo 'quienes tienen bases y quieren avanzar.'; break;
-                                    case 'B1': echo 'usuarios intermedios que buscan fluidez.'; break;
-                                    case 'B2': echo 'usuarios avanzados que perfeccionan su inglés.'; break;
-                                    case 'C1': echo 'expertos que buscan maestría.'; break;
-                                    default: echo 'todos los niveles.'; break;
-                                }
-                            ?></p>
-                            <ul class="course-features">
-                                <li>Acceso a todos los cursos de nivel <?php echo htmlspecialchars($level); ?></li>
-                                <li>Material descargable</li>
-                                <li>Ejercicios interactivos</li>
-                            </ul>
-                            <p class="course-price">
-                                $<?php echo htmlspecialchars(number_format($playlist['price'] ?? 0, 2)); ?>
-                                <?php if (isset($playlist['original_price']) && $playlist['original_price'] && $playlist['original_price'] > ($playlist['price'] ?? 0)): ?>
-                                    <span class="original-price">$<?php echo htmlspecialchars(number_format($playlist['original_price'], 2)); ?></span>
-                                    <span class="discount">-<?php echo round((($playlist['original_price'] - ($playlist['price'] ?? 0)) / $playlist['original_price']) * 100); ?>%</span>
-                                <?php endif; ?>
-                            </p>
-                            <a href="all-courses.php#level-<?php echo strtolower($level); ?>" class="btn-primary">Ver Cursos</a>
+                <?php foreach ($activeSyncClasses as $syncClass): ?>
+                    <?php 
+                        $hasAccess = $userSyncClassModel->hasAccess($userId, $syncClass['id']);
+                        $isPast = strtotime($syncClass['end_date']) < time();
+                    ?>
+                    <div class="course-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="level-badge neon-glow" style="background-color: <?php echo $isPast ? '#6c757d' : '#28a745'; ?>; color: white;">
+                            <?php echo $isPast ? 'Finalizada' : 'Próxima'; ?>
                         </div>
-                    <?php endif; ?>
+                        <div class="course-icon" style="color: white;"><i class="fas fa-video"></i></div>
+                        <h3 class="course-title" style="color: white;"><?php echo htmlspecialchars($syncClass['title']); ?></h3>
+                        <p class="course-subtitle" style="color: rgba(255,255,255,0.9);">
+                            <?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase en vivo', 0, 100)); ?>
+                        </p>
+                        <ul class="course-features" style="color: rgba(255,255,255,0.9);">
+                            <li><i class="fas fa-calendar"></i> Inicio: <?php echo date('d M Y H:i', strtotime($syncClass['start_date'])); ?></li>
+                            <li><i class="fas fa-clock"></i> Fin: <?php echo date('d M Y H:i', strtotime($syncClass['end_date'])); ?></li>
+                            <li><i class="fas fa-users"></i> Clase interactiva en vivo</li>
+                        </ul>
+                        <p class="course-price" style="color: white;">
+                            $<?php echo number_format($syncClass['price'], 2); ?>
+                        </p>
+                        <?php if ($hasAccess): ?>
+                            <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="btn-primary" style="background: #28a745;">
+                                <i class="fas fa-play"></i> Unirse a la Clase
+                            </a>
+                        <?php elseif ($isPast): ?>
+                            <button class="btn-primary" style="background: #6c757d; cursor: not-allowed;" disabled>
+                                Clase Finalizada
+                            </button>
+                        <?php else: ?>
+                            <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-primary">
+                                <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 <?php endforeach; ?>
             </div>
-            <div class="view-more">
-                <a href="all-courses.php">Explorar todos los niveles <i class="fas fa-arrow-right"></i></a>
+            <?php else: ?>
+            <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px;">
+                <i class="fas fa-calendar-times" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <h3>No hay clases sincrónicas programadas</h3>
+                <p>Pronto anunciaremos nuevas clases en vivo. ¡Mantente atento!</p>
             </div>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -651,6 +663,30 @@ document.addEventListener('keydown', function(event) {
         closeBookModal();
     }
 });
+
+// Función para agregar clases sincrónicas al carrito
+function addSyncClassToCart(classId) {
+    fetch('../../controllers/SyncClassController.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=add&id=${classId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success' || data.status === 'info') {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.message || 'Error al agregar la clase');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al agregar la clase al carrito');
+    });
+}
     </script>
 </body>
 </html>

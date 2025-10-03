@@ -518,25 +518,28 @@ try {
                 <h2><i class="fas fa-graduation-cap"></i> Admin Panel</h2>
             </div>
             <nav class="sidebar-nav">
-                <a href="index.php?page=admin&action=dashboard" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=dashboard" class="nav-link active">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a href="index.php?page=admin&action=users" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=users" class="nav-link">
                     <i class="fas fa-users"></i> Usuarios
                 </a>
-                <a href="index.php?page=admin&action=courses" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=courses" class="nav-link">
                     <i class="fas fa-book"></i> Cursos
                 </a>
-                <a href="index.php?page=admin&action=books" class="nav-link active">
-                    <i class="fas fa-book-open"></i> Libros
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=sync-classes" class="nav-link">
+                    <i class="fas fa-video"></i> Clases Sincrónicas
                 </a>
-                <a href="index.php?page=admin&action=orders" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=orders" class="nav-link">
                     <i class="fas fa-shopping-cart"></i> Pedidos
                 </a>
-                <a href="index.php?page=admin&action=profile" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=books" class="nav-link">
+                    <i class="fas fa-book-open"></i> Libros
+                </a>
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=profile" class="nav-link">
                     <i class="fas fa-user-cog"></i> Mi Perfil
                 </a>
-                <a href="logout.php" class="nav-link">
+                <a href="<?php echo $baseUrl; ?>logout.php" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </a>
             </nav>

@@ -11,8 +11,11 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Order.php';
 require_once __DIR__ . '/../models/UserCourse.php';
 require_once __DIR__ . '/../models/Playlist.php';
+require_once __DIR__ . '/../models/UserSyncClass.php';
+require_once __DIR__ . '/../models/SyncClass.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/CartController.php';
+require_once __DIR__ . '/../controllers/SyncClassController.php';
 require_once __DIR__ . '/../helpers/SecurityHelper.php';
 require_once __DIR__ . '/../helpers/ValidationHelper.php';
 require_once __DIR__ . '/../helpers/StripeHelper.php';
@@ -21,8 +24,11 @@ require_once __DIR__ . '/../config/config.php';
 use Models\Order;
 use Models\UserCourse;
 use Models\Playlist;
+use Models\UserSyncClass;
+use Models\SyncClass;
 use Controllers\AuthController;
 use Controllers\CartController;
+use Controllers\SyncClassController;
 use Helpers\SecurityHelper;
 use Helpers\ValidationHelper;
 use Helpers\StripeHelper;
@@ -32,6 +38,8 @@ class PaymentController {
     private $orderModel;
     private $userCourseModel;
     private $playlistModel;
+    private $userSyncClassModel;
+    private $syncClassModel;
     private $stripeHelper;
 
     // Configura tus claves de Stripe aquí
@@ -57,6 +65,8 @@ class PaymentController {
             $this->orderModel = new Order($this->db);
             $this->userCourseModel = new UserCourse($this->db);
             $this->playlistModel = new Playlist($this->db);
+            $this->userSyncClassModel = new UserSyncClass($this->db);
+            $this->syncClassModel = new SyncClass($this->db);
 
             // Inicializar Stripe Helper
             $this->stripeHelper = new StripeHelper($this->stripeSecretKey);
@@ -128,8 +138,9 @@ class PaymentController {
 
             $user = AuthController::getCurrentUser();
             $cart = $_SESSION['cart'] ?? [];
+            $cartSyncClasses = $_SESSION['cart_sync_classes'] ?? [];
 
-            if (empty($cart)) {
+            if (empty($cart) && empty($cartSyncClasses)) {
                 AuthController::setFlashMessage('error', 'Tu carrito está vacío.');
                 header('Location: ../views/client/cart.php');
                 exit();
@@ -137,14 +148,46 @@ class PaymentController {
 
             // Usar CartController para obtener items normalizados
             $cartController = new CartController();
+            $syncClassController = new SyncClassController();
+            
             $cartItems = $cartController->getCartItems();
-            $totals = $cartController->calculateTotals($cartItems);
+            $syncClassItems = $syncClassController->getCartItems();
+            
+            // Combinar items de cursos y clases sincrónicas
+            $allCartItems = array_merge($cartItems, $syncClassItems);
+            
+            // Calcular totales combinados
+            $totals = [
+                'subtotal' => 0,
+                'discount' => 0,
+                'tax' => 0,
+                'total' => 0,
+                'promo_code_applied' => null
+            ];
+            
+            if (!empty($cartItems)) {
+                $courseTotals = $cartController->calculateTotals($cartItems);
+                $totals['subtotal'] += $courseTotals['subtotal'];
+                $totals['discount'] += $courseTotals['discount'];
+                $totals['tax'] += $courseTotals['tax'];
+                $totals['total'] += $courseTotals['total'];
+                $totals['promo_code_applied'] = $courseTotals['promo_code_applied'];
+            }
+            
+            if (!empty($syncClassItems)) {
+                $syncClassTotals = $syncClassController->calculateTotals($syncClassItems);
+                $totals['subtotal'] += $syncClassTotals['subtotal'];
+                $totals['tax'] += $syncClassTotals['tax'];
+                $totals['total'] += $syncClassTotals['total'];
+            }
 
-            if (empty($cartItems)) {
-                AuthController::setFlashMessage('error', 'No hay cursos válidos en tu carrito.');
+            if (empty($allCartItems)) {
+                AuthController::setFlashMessage('error', 'No hay items válidos en tu carrito.');
                 header('Location: ../views/client/cart.php');
                 exit();
             }
+            
+            $cart_items = $allCartItems;
 
             // Generar token CSRF
             $csrfToken = $this->generateCSRFToken();
@@ -206,17 +249,49 @@ class PaymentController {
 
             // Usar CartController para obtener datos actualizados del carrito
             $cartController = new CartController();
+            $syncClassController = new SyncClassController();
+            
             $cartItems = $cartController->getCartItems();
-            $totals = $cartController->calculateTotals($cartItems);
+            $syncClassItems = $syncClassController->getCartItems();
+            
+            // Combinar todos los items
+            $allCartItems = array_merge($cartItems, $syncClassItems);
+            
+            // Calcular totales combinados
+            $totals = [
+                'subtotal' => 0,
+                'discount' => 0,
+                'tax' => 0,
+                'total' => 0,
+                'promo_code_applied' => null
+            ];
+            
+            if (!empty($cartItems)) {
+                $courseTotals = $cartController->calculateTotals($cartItems);
+                $totals['subtotal'] += $courseTotals['subtotal'];
+                $totals['discount'] += $courseTotals['discount'];
+                $totals['tax'] += $courseTotals['tax'];
+                $totals['total'] += $courseTotals['total'];
+                $totals['promo_code_applied'] = $courseTotals['promo_code_applied'];
+            }
+            
+            if (!empty($syncClassItems)) {
+                $syncClassTotals = $syncClassController->calculateTotals($syncClassItems);
+                $totals['subtotal'] += $syncClassTotals['subtotal'];
+                $totals['tax'] += $syncClassTotals['tax'];
+                $totals['total'] += $syncClassTotals['total'];
+            }
 
-            if (empty($cartItems)) {
+            if (empty($allCartItems)) {
                 AuthController::setFlashMessage('error', 'Tu carrito está vacío. No se puede procesar el pago.');
                 header('Location: ../views/client/cart.php');
                 exit();
             }
 
-            // Verificar acceso duplicado y preparar lista de cursos
+            // Verificar acceso duplicado y preparar listas
             $purchasedPlaylistIds = [];
+            $purchasedSyncClassIds = [];
+            
             foreach ($cartItems as $item) {
                 $playlistId = $item['id'];
                 
@@ -228,6 +303,19 @@ class PaymentController {
                 }
                 
                 $purchasedPlaylistIds[] = $playlistId;
+            }
+            
+            foreach ($syncClassItems as $item) {
+                $syncClassId = $item['id'];
+                
+                // Verificar que el usuario no tenga acceso
+                if ($this->userSyncClassModel->hasAccess($userId, $syncClassId)) {
+                    AuthController::setFlashMessage('error', 'Ya tienes acceso a una de las clases seleccionadas: ' . htmlspecialchars($item['title']));
+                    header('Location: ../views/client/cart.php');
+                    exit();
+                }
+                
+                $purchasedSyncClassIds[] = $syncClassId;
             }
 
             $finalAmount = $totals['total'];
@@ -253,7 +341,8 @@ class PaymentController {
                 'metadata' => [
                     'user_id' => $userId,
                     'user_email' => $userEmail,
-                    'cart_items' => json_encode($purchasedPlaylistIds),
+                    'cart_courses' => json_encode($purchasedPlaylistIds),
+                    'cart_sync_classes' => json_encode($purchasedSyncClassIds),
                     'original_amount' => $totals['subtotal'],
                     'discount_applied' => $totals['discount'],
                     'tax_amount' => $totals['tax'],
@@ -270,6 +359,7 @@ class PaymentController {
                 error_log("User ID: $userId");
                 error_log("Amount: $finalAmount");
                 error_log("Cursos a comprar: " . json_encode($purchasedPlaylistIds));
+                error_log("Clases sincrónicas a comprar: " . json_encode($purchasedSyncClassIds));
 
                 try {
                     if (!$this->db) {
@@ -318,6 +408,7 @@ class PaymentController {
                     $accessGranted = true;
                     $accessErrors = [];
                     
+                    // Otorgar acceso a cursos
                     foreach ($purchasedPlaylistIds as $playlistId) {
                         error_log("Otorgando acceso al curso $playlistId para usuario $userId");
                         
@@ -339,11 +430,40 @@ class PaymentController {
                             error_log("Error al otorgar acceso al curso $playlistId para el usuario $userId");
                         } else {
                             error_log("Acceso otorgado exitosamente al curso $playlistId para el usuario $userId");
-                            // Verificar acceso inmediatamente después de otorgarlo
                             if ($this->userCourseModel->hasAccess($userId, $playlistId)) {
                                 error_log("VERIFICACIÓN: Usuario $userId AHORA tiene acceso al curso $playlistId.");
                             } else {
                                 error_log("VERIFICACIÓN FALLIDA: Usuario $userId NO tiene acceso al curso $playlistId después de intentar otorgarlo.");
+                            }
+                        }
+                    }
+                    
+                    // Otorgar acceso a clases sincrónicas
+                    foreach ($purchasedSyncClassIds as $syncClassId) {
+                        error_log("Otorgando acceso a la clase sincrónica $syncClassId para usuario $userId");
+                        
+                        $syncClass = $this->syncClassModel->readOne($syncClassId);
+                        if (!$syncClass) {
+                            $accessErrors[] = "Clase sincrónica $syncClassId no encontrada";
+                            error_log("Error: Clase sincrónica $syncClassId no encontrada");
+                            continue;
+                        }
+                        
+                        if ($this->userSyncClassModel->hasAccess($userId, $syncClassId)) {
+                            error_log("Usuario $userId ya tiene acceso a la clase sincrónica $syncClassId");
+                            continue;
+                        }
+                        
+                        if (!$this->userSyncClassModel->grantAccess($userId, $syncClassId, $orderId)) {
+                            $accessGranted = false;
+                            $accessErrors[] = "Error al otorgar acceso a la clase sincrónica $syncClassId";
+                            error_log("Error al otorgar acceso a la clase sincrónica $syncClassId para el usuario $userId");
+                        } else {
+                            error_log("Acceso otorgado exitosamente a la clase sincrónica $syncClassId para el usuario $userId");
+                            if ($this->userSyncClassModel->hasAccess($userId, $syncClassId)) {
+                                error_log("VERIFICACIÓN: Usuario $userId AHORA tiene acceso a la clase sincrónica $syncClassId.");
+                            } else {
+                                error_log("VERIFICACIÓN FALLIDA: Usuario $userId NO tiene acceso a la clase sincrónica $syncClassId después de intentar otorgarlo.");
                             }
                         }
                     }
@@ -357,6 +477,7 @@ class PaymentController {
 
                     error_log("Limpiando carrito de la sesión...");
                     unset($_SESSION['cart']);
+                    unset($_SESSION['cart_sync_classes']);
                     unset($_SESSION['promo_code_applied']);
                     unset($_SESSION['promo_discount_rate']);
                     unset($_SESSION['promo_message']);
