@@ -283,7 +283,12 @@ $userDisplayName = getUserDisplayName($currentUser);
                                     $<?php echo number_format($syncClass['price'], 2); ?>
                                 </div>
                                 <?php if ($hasAccess): ?>
-                                    <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse</a>
+                                    <div style="display: flex; gap: 8px; flex-direction: column; width: 100%;">
+                                        <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse</a>
+                                        <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-ics-download" title="Descargar evento para tu calendario">
+                                            <i class="fas fa-calendar-plus"></i> Agregar a Calendario
+                                        </a>
+                                    </div>
                                 <?php elseif ($isPast): ?>
                                     <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed;" disabled>Finalizada</button>
                                 <?php else: ?>

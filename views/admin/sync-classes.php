@@ -661,6 +661,26 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             <?php endif; ?>
 
             <div class="content-section">
+                <!-- Info Box sobre archivos ICS -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                    <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-info-circle"></i> Sistema de Calendario Integrado
+                    </h3>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Todas las clases sincrónicas que crees se pueden descargar automáticamente como archivos .ics (iCalendar). Los usuarios que compren tus clases podrán:
+                    </p>
+                    <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                        <li><strong>Descargar</strong> cada clase individual como archivo .ics desde su página de inicio</li>
+                        <li><strong>Agregar</strong> las clases directamente a Google Calendar, Apple Calendar, Outlook o cualquier calendario compatible</li>
+                        <li><strong>Recibir recordatorios</strong> automáticos 15 minutos antes de cada clase</li>
+                        <li><strong>Acceder</strong> al enlace de la reunión directamente desde su calendario</li>
+                        <li><strong>Descargar todas</strong> sus clases de una vez desde su historial de compras</li>
+                    </ul>
+                    <p style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; margin-bottom: 0;">
+                        <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Asegúrate de incluir enlaces de reunión válidos (Zoom, Google Meet, etc.) para que los estudiantes puedan unirse fácilmente desde su calendario.
+                    </p>
+                </div>
+                
                 <div class="class-form">
                     <h2>
                         <i class="fas fa-<?php echo $editClass ? 'edit' : 'plus-circle'; ?>"></i>
