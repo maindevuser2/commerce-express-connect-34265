@@ -75,7 +75,9 @@ foreach ($ordered_levels as $level) {
 
 // Obtener el conteo del carrito para el header
 $cartController = new CartController();
-$cart_count = $cartController->getCartCount();
+require_once __DIR__ . '/../../controllers/SyncClassController.php';
+$syncCartCount = \Controllers\SyncClassController::getCartCount();
+$cart_count = $cartController->getCartCount() + $syncCartCount;
 
 // Obtener mensaje flash si existe
 $flashMessage = AuthController::getFlashMessage();
@@ -238,48 +240,57 @@ $userDisplayName = getUserDisplayName($currentUser);
     }
     ?>
     
-    <section class="courses" style="background: #f8f9fa;">
+    <section class="best-sellers" style="background: #f8f9fa;">
         <div class="container">
             <h2>Clases Sincrónicas</h2>
             <p class="section-subtitle">Únete a nuestras clases en vivo y aprende en tiempo real con el profesor</p>
             
             <?php if (!empty($activeSyncClasses)): ?>
-            <div class="courses-grid">
+            <div class="products-grid">
                 <?php foreach ($activeSyncClasses as $syncClass): ?>
                     <?php 
                         $hasAccess = $userSyncClassModel->hasAccess($userId, $syncClass['id']);
                         $isPast = strtotime($syncClass['end_date']) < time();
                     ?>
-                    <div class="course-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <div class="level-badge neon-glow" style="background-color: <?php echo $isPast ? '#6c757d' : '#28a745'; ?>; color: white;">
-                            <?php echo $isPast ? 'Finalizada' : 'Próxima'; ?>
+                    <div class="product-card">
+                        <div class="product-tumb">
+                            <div style="background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                                <div style="text-align: center; color: white;">
+                                    <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                                    <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
+                                </div>
+                            </div>
+                            <?php if (!$isPast && !$hasAccess): ?>
+                            <div class="course-overlay">
+                                <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-overlay">Agregar al Carrito</button>
+                            </div>
+                            <?php endif; ?>
                         </div>
-                        <div class="course-icon" style="color: white;"><i class="fas fa-video"></i></div>
-                        <h3 class="course-title" style="color: white;"><?php echo htmlspecialchars($syncClass['title']); ?></h3>
-                        <p class="course-subtitle" style="color: rgba(255,255,255,0.9);">
-                            <?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase en vivo', 0, 100)); ?>
-                        </p>
-                        <ul class="course-features" style="color: rgba(255,255,255,0.9);">
-                            <li><i class="fas fa-calendar"></i> Inicio: <?php echo date('d M Y H:i', strtotime($syncClass['start_date'])); ?></li>
-                            <li><i class="fas fa-clock"></i> Fin: <?php echo date('d M Y H:i', strtotime($syncClass['end_date'])); ?></li>
-                            <li><i class="fas fa-users"></i> Clase interactiva en vivo</li>
-                        </ul>
-                        <p class="course-price" style="color: white;">
-                            $<?php echo number_format($syncClass['price'], 2); ?>
-                        </p>
-                        <?php if ($hasAccess): ?>
-                            <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="btn-primary" style="background: #28a745;">
-                                <i class="fas fa-play"></i> Unirse a la Clase
-                            </a>
-                        <?php elseif ($isPast): ?>
-                            <button class="btn-primary" style="background: #6c757d; cursor: not-allowed;" disabled>
-                                Clase Finalizada
-                            </button>
-                        <?php else: ?>
-                            <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-primary">
-                                <i class="fas fa-shopping-cart"></i> Agregar al Carrito
-                            </button>
-                        <?php endif; ?>
+                        <div class="product-details">
+                            <span class="product-catagory">
+                                <?php if ($isPast): ?>
+                                    <i class="fas fa-clock"></i> Finalizada
+                                <?php else: ?>
+                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?>
+                                <?php endif; ?>
+                            </span>
+                            <h4>
+                                <?php echo htmlspecialchars($syncClass['title']); ?>
+                            </h4>
+                            <p><?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase sincrónica en vivo', 0, 100)); ?></p>
+                            <div class="product-bottom-details">
+                                <div class="product-price">
+                                    $<?php echo number_format($syncClass['price'], 2); ?>
+                                </div>
+                                <?php if ($hasAccess): ?>
+                                    <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse</a>
+                                <?php elseif ($isPast): ?>
+                                    <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed;" disabled>Finalizada</button>
+                                <?php else: ?>
+                                    <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="add-to-cart-btn">Agregar al Carrito</button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -666,6 +677,14 @@ document.addEventListener('keydown', function(event) {
 
 // Función para agregar clases sincrónicas al carrito
 function addSyncClassToCart(classId) {
+    // Obtener el botón que se clickeó
+    const button = event.target;
+    const originalHTML = button.innerHTML;
+    
+    // Mostrar estado de carga
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
+    button.disabled = true;
+
     fetch('../../controllers/SyncClassController.php', {
         method: 'POST',
         headers: {
@@ -675,16 +694,31 @@ function addSyncClassToCart(classId) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success' || data.status === 'info') {
-            alert(data.message);
-            location.reload();
+        if (data.status === 'success') {
+            showNotification(data.message || 'Clase agregada al carrito exitosamente', 'success');
+            updateCartCount();
+            
+            // Cambiar el botón a "Agregado"
+            button.innerHTML = '<i class="fas fa-check"></i> Agregado';
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }, 2000);
+        } else if (data.status === 'info') {
+            showNotification(data.message, 'success');
+            button.innerHTML = originalHTML;
+            button.disabled = false;
         } else {
-            alert(data.message || 'Error al agregar la clase');
+            showNotification(data.message || 'Error al agregar la clase', 'error');
+            button.innerHTML = originalHTML;
+            button.disabled = false;
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error al agregar la clase al carrito');
+        showNotification('Error al agregar la clase al carrito', 'error');
+        button.innerHTML = originalHTML;
+        button.disabled = false;
     });
 }
     </script>
