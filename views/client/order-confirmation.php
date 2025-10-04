@@ -7,12 +7,14 @@ require_once __DIR__ . '/../../controllers/AuthController.php';
 require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../models/Order.php';
 require_once __DIR__ . '/../../models/UserCourse.php';
+require_once __DIR__ . '/../../models/UserSyncClass.php';
 require_once __DIR__ . '/../../models/Playlist.php';
 require_once __DIR__ . '/../../controllers/CartController.php';
 
 use Controllers\AuthController;
 use Models\Order;
 use Models\UserCourse;
+use Models\UserSyncClass;
 use Controllers\CartController;
 
 // Verificar autenticación
@@ -36,6 +38,7 @@ $db = $database->getConnection();
 // Modelos
 $orderModel = new Order($db);
 $userCourseModel = new UserCourse($db);
+$userSyncClassModel = new UserSyncClass($db);
 $cartController = new CartController();
 
 // Obtener datos del pedido
@@ -56,6 +59,9 @@ if ($order['user_id'] != $currentUser['id']) {
 
 // Obtener cursos asociados al pedido
 $orderItems = $userCourseModel->getCoursesByOrderId($orderId);
+
+// Obtener clases sincrónicas asociadas al pedido
+$syncClassItems = $userSyncClassModel->getSyncClassesByOrderId($orderId);
 
 // Obtener conteo del carrito
 $cart_count = $cartController->getCartCount();
@@ -167,7 +173,8 @@ function getUserDisplayName($user) {
 
                     <!-- Courses Purchased -->
                     <div class="courses-purchased">
-                        <h3><i class="fas fa-graduation-cap"></i> Cursos Adquiridos</h3>
+                        <h3><i class="fas fa-graduation-cap"></i> Productos Adquiridos</h3>
+                        
                         <?php if (!empty($orderItems)): ?>
                             <div class="course-list">
                                 <?php foreach ($orderItems as $course): ?>
@@ -189,8 +196,41 @@ function getUserDisplayName($user) {
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                        <?php else: ?>
-                            <p>No se encontraron detalles de los cursos. Por favor, contacta a soporte.</p>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($syncClassItems)): ?>
+                            <div class="course-list">
+                                <?php foreach ($syncClassItems as $syncClass): ?>
+                                    <div class="course-item" style="border-left: 3px solid #667eea;">
+                                        <div class="course-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-video" style="font-size: 3rem; color: white;"></i>
+                                        </div>
+                                        <div class="course-info">
+                                            <div class="course-name">
+                                                <i class="fas fa-video"></i> <?php echo htmlspecialchars($syncClass['title'] ?? 'Clase sin título'); ?>
+                                            </div>
+                                            <div class="course-level">
+                                                <i class="fas fa-calendar"></i> <?php echo date('d M Y - H:i', strtotime($syncClass['start_date'])); ?>
+                                            </div>
+                                            <?php if (!empty($syncClass['meeting_link'])): ?>
+                                                <div class="course-level">
+                                                    <i class="fas fa-link"></i> 
+                                                    <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" style="color: #667eea;">
+                                                        Enlace de reunión
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="course-price">
+                                            $<?php echo number_format($syncClass['price'] ?? 0, 2); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (empty($orderItems) && empty($syncClassItems)): ?>
+                            <p>No se encontraron detalles de los productos. Por favor, contacta a soporte.</p>
                         <?php endif; ?>
                     </div>
 
@@ -198,8 +238,15 @@ function getUserDisplayName($user) {
                     <div class="next-steps">
                         <h4><i class="fas fa-lightbulb"></i> Próximos Pasos</h4>
                         <ul>
-                            <li><i class="fas fa-check"></i> Ya tienes acceso completo a todos los cursos comprados</li>
-                            <li><i class="fas fa-play"></i> Puedes comenzar a estudiar inmediatamente</li>
+                            <?php if (!empty($orderItems)): ?>
+                                <li><i class="fas fa-check"></i> Ya tienes acceso completo a todos los cursos comprados</li>
+                                <li><i class="fas fa-play"></i> Puedes comenzar a estudiar inmediatamente</li>
+                            <?php endif; ?>
+                            <?php if (!empty($syncClassItems)): ?>
+                                <li><i class="fas fa-video"></i> Tus clases sincrónicas están confirmadas</li>
+                                <li><i class="fas fa-calendar-alt"></i> Descarga los eventos a tu calendario desde "Mis Cursos"</li>
+                                <li><i class="fas fa-bell"></i> Recibirás recordatorios automáticos antes de cada clase</li>
+                            <?php endif; ?>
                             <li><i class="fas fa-history"></i> Revisa tu historial de compras en cualquier momento</li>
                         </ul>
                     </div>
