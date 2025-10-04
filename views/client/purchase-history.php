@@ -391,6 +391,19 @@ if ($firstAccessDate) {
                                          <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-access btn-ics-small" style="background: #f8f9fa; color: #333; border: 2px solid #e0e0e0;">
                                              <i class="fas fa-calendar-plus"></i> Agregar a Calendario
                                          </a>
+                                         <?php
+                                         // Generar URL para Google Calendar
+                                         $startDateFormatted = gmdate('Ymd\THis\Z', strtotime($syncClass['start_date']));
+                                         $endDateFormatted = gmdate('Ymd\THis\Z', strtotime($syncClass['end_date']));
+                                         $googleCalendarUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+                                         $googleCalendarUrl .= '&text=' . urlencode($syncClass['title']);
+                                         $googleCalendarUrl .= '&dates=' . $startDateFormatted . '/' . $endDateFormatted;
+                                         $googleCalendarUrl .= '&details=' . urlencode(($syncClass['description'] ?? '') . "\n\nEnlace de reunión: " . $syncClass['meeting_link']);
+                                         $googleCalendarUrl .= '&location=' . urlencode($syncClass['meeting_link']);
+                                         ?>
+                                         <a href="<?php echo htmlspecialchars($googleCalendarUrl); ?>" target="_blank" class="btn-access btn-ics-small" style="background: #4285f4; color: white; border: 2px solid #4285f4;">
+                                             <i class="fab fa-google"></i> Agregar a Google Calendar
+                                         </a>
                                      </div>
                                 </div>
                             </div>
