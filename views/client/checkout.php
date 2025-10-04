@@ -146,14 +146,6 @@ $baseUrl = $protocol . '://' . $host . $basePath;
                 </div>
             <?php endif; ?>
 
-            <!-- Debug Info (solo para desarrollo) -->
-            <div id="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px;">
-                <strong>Debug Info:</strong><br>
-                Stripe Key: <?php echo !empty($stripePublishableKey) ? 'Configurada ✓' : 'NO CONFIGURADA ✗'; ?><br>
-                Cart Items: <?php echo count($cart_items); ?><br>
-                Total: $<?php echo number_format($totals['total'], 2); ?>
-            </div>
-
             <div class="checkout-container">
                 <!-- Formulario de Checkout -->
                 <div class="checkout-form">

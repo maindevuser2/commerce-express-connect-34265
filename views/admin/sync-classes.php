@@ -671,14 +671,12 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                         <i class="fas fa-info-circle"></i> Sistema de Calendario Integrado
                     </h3>
                     <p style="margin-bottom: 1rem; line-height: 1.6;">
-                        Todas las clases sincrónicas que crees se pueden descargar automáticamente como archivos .ics (iCalendar). Los usuarios que compren tus clases podrán:
+                        Los usuarios que compren tus clases podrán:
                     </p>
                     <ul style="margin-left: 1.5rem; line-height: 1.8;">
-                        <li><strong>Descargar</strong> cada clase individual como archivo .ics desde su página de inicio</li>
                         <li><strong>Agregar</strong> las clases directamente a Google Calendar, Apple Calendar, Outlook o cualquier calendario compatible</li>
                         <li><strong>Recibir recordatorios</strong> automáticos 15 minutos antes de cada clase</li>
                         <li><strong>Acceder</strong> al enlace de la reunión directamente desde su calendario</li>
-                        <li><strong>Descargar todas</strong> sus clases de una vez desde su historial de compras</li>
                     </ul>
                     <p style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; margin-bottom: 0;">
                         <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Asegúrate de incluir enlaces de reunión válidos (Zoom, Google Meet, etc.) para que los estudiantes puedan unirse fácilmente desde su calendario.
@@ -736,6 +734,50 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                         </select>
                     </div>
                     <?php endif; ?>
+                </div>
+
+                    <!-- Horarios Semanales -->
+                    <div class="form-group full-width">
+                        <label style="font-size: 1.1rem; color: #1e293b; margin-bottom: 1rem; display: block;">
+                            <i class="fas fa-calendar-week"></i> Horarios Semanales
+                        </label>
+                        <div id="schedules-container" style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.5rem; background: #f8fafc;">
+                            <?php 
+                            $schedulesData = !empty($editSchedules) ? $editSchedules : [];
+                            if (empty($schedulesData)) {
+                                $schedulesData = [['day_of_week' => '', 'start_time' => '', 'end_time' => '']];
+                            }
+                            foreach ($schedulesData as $index => $schedule): 
+                            ?>
+                            <div class="schedule-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                                <select name="schedules[<?php echo $index; ?>][day]" class="form-control" style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                                    <option value="">Seleccionar día</option>
+                                    <option value="1" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 1) ? 'selected' : ''; ?>>Lunes</option>
+                                    <option value="2" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 2) ? 'selected' : ''; ?>>Martes</option>
+                                    <option value="3" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 3) ? 'selected' : ''; ?>>Miércoles</option>
+                                    <option value="4" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 4) ? 'selected' : ''; ?>>Jueves</option>
+                                    <option value="5" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 5) ? 'selected' : ''; ?>>Viernes</option>
+                                    <option value="6" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 6) ? 'selected' : ''; ?>>Sábado</option>
+                                    <option value="0" <?php echo (isset($schedule['day_of_week']) && $schedule['day_of_week'] == 0) ? 'selected' : ''; ?>>Domingo</option>
+                                </select>
+                                <input type="time" name="schedules[<?php echo $index; ?>][start_time]" 
+                                       value="<?php echo isset($schedule['start_time']) ? substr($schedule['start_time'], 0, 5) : ''; ?>" 
+                                       placeholder="Hora inicio"
+                                       style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                                <input type="time" name="schedules[<?php echo $index; ?>][end_time]" 
+                                       value="<?php echo isset($schedule['end_time']) ? substr($schedule['end_time'], 0, 5) : ''; ?>" 
+                                       placeholder="Hora fin"
+                                       style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                                <button type="button" onclick="removeSchedule(this)" class="btn btn-sm btn-delete" style="padding: 0.5rem 0.75rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" onclick="addSchedule()" class="btn btn-secondary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Agregar Horario
+                        </button>
+                    </div>
                 </div>
                 
                     <div class="form-actions">
@@ -818,6 +860,46 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     </div>
 
     <script>
+        let scheduleIndex = <?php echo count($schedulesData); ?>;
+        
+        function addSchedule() {
+            const container = document.getElementById('schedules-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'schedule-row';
+            newRow.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; margin-bottom: 1rem; align-items: center;';
+            
+            newRow.innerHTML = `
+                <select name="schedules[${scheduleIndex}][day]" class="form-control" style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                    <option value="">Seleccionar día</option>
+                    <option value="1">Lunes</option>
+                    <option value="2">Martes</option>
+                    <option value="3">Miércoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sábado</option>
+                    <option value="0">Domingo</option>
+                </select>
+                <input type="time" name="schedules[${scheduleIndex}][start_time]" placeholder="Hora inicio" style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                <input type="time" name="schedules[${scheduleIndex}][end_time]" placeholder="Hora fin" style="padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Poppins', sans-serif;">
+                <button type="button" onclick="removeSchedule(this)" class="btn btn-sm btn-delete" style="padding: 0.5rem 0.75rem;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            
+            container.appendChild(newRow);
+            scheduleIndex++;
+        }
+        
+        function removeSchedule(button) {
+            const row = button.closest('.schedule-row');
+            const container = document.getElementById('schedules-container');
+            if (container.querySelectorAll('.schedule-row').length > 1) {
+                row.remove();
+            } else {
+                alert('Debe haber al menos un horario');
+            }
+        }
+    
         // Animación de entrada
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('.class-form');
@@ -843,6 +925,10 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 }, 300);
             }
         });
+
+        function addToGoogleCalendar(classId) {
+            window.open('/controllers/GoogleCalendarController.php?action=add&class_id=' + classId, '_blank');
+        }
 
         // Responsive sidebar
         function toggleSidebar() {

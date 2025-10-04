@@ -555,6 +555,9 @@ ALTER TABLE `sync_classes`
   ADD KEY `idx_is_active` (`is_active`),
   ADD KEY `idx_created_at` (`created_at`);
 
+ALTER TABLE sync_classes 
+ADD COLUMN whatsapp_group_link VARCHAR(500) NULL DEFAULT NULL 
+AFTER meeting_link;
 --
 -- Indices de la tabla `user_sync_classes`
 --
