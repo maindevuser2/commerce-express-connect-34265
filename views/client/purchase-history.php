@@ -382,6 +382,11 @@ if ($firstAccessDate) {
                                          <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="btn-access" style="background: #28a745; margin-bottom: 8px;">
                                              <i class="fas fa-video"></i> Unirse a la Clase
                                          </a>
+                                         <?php if (!empty($syncClass['whatsapp_group_link'])): ?>
+                                         <a href="<?php echo htmlspecialchars($syncClass['whatsapp_group_link']); ?>" target="_blank" class="btn-access" style="background: #25D366; color: white; margin-bottom: 8px;">
+                                             <i class="fab fa-whatsapp"></i> Unirse al Grupo de WhatsApp
+                                         </a>
+                                         <?php endif; ?>
                                          <?php endif; ?>
                                          <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-access" style="background: #f8f9fa; color: #333; border: 2px solid #e0e0e0;">
                                              <i class="fas fa-calendar-plus"></i> Agregar a mi Calendario

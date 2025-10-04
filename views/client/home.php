@@ -284,7 +284,12 @@ $userDisplayName = getUserDisplayName($currentUser);
                                 </div>
                                 <?php if ($hasAccess): ?>
                                     <div style="display: flex; gap: 8px; flex-direction: column; width: 100%;">
-                                        <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse</a>
+                                        <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse a la Clase</a>
+                                        <?php if (!empty($syncClass['whatsapp_group_link'])): ?>
+                                        <a href="<?php echo htmlspecialchars($syncClass['whatsapp_group_link']); ?>" target="_blank" class="btn-ics-download" style="background: #25D366; color: white;" title="Unirse al grupo de WhatsApp">
+                                            <i class="fab fa-whatsapp"></i> Unirse al Grupo
+                                        </a>
+                                        <?php endif; ?>
                                         <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-ics-download" title="Descargar evento para tu calendario">
                                             <i class="fas fa-calendar-plus"></i> Agregar a Calendario
                                         </a>

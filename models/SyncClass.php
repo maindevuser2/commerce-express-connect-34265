@@ -10,6 +10,7 @@ class SyncClass {
     public $description;
     public $price;
     public $meeting_link;
+    public $whatsapp_group_link;
     public $start_date;
     public $end_date;
     public $is_active;
@@ -27,6 +28,7 @@ class SyncClass {
                     description = :description,
                     price = :price,
                     meeting_link = :meeting_link,
+                    whatsapp_group_link = :whatsapp_group_link,
                     start_date = :start_date,
                     end_date = :end_date,
                     is_active = :is_active";
@@ -37,6 +39,7 @@ class SyncClass {
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':price', $this->price);
         $stmt->bindParam(':meeting_link', $this->meeting_link);
+        $stmt->bindParam(':whatsapp_group_link', $this->whatsapp_group_link);
         $stmt->bindParam(':start_date', $this->start_date);
         $stmt->bindParam(':end_date', $this->end_date);
         $stmt->bindParam(':is_active', $this->is_active);
@@ -82,6 +85,7 @@ class SyncClass {
                     description = :description,
                     price = :price,
                     meeting_link = :meeting_link,
+                    whatsapp_group_link = :whatsapp_group_link,
                     start_date = :start_date,
                     end_date = :end_date,
                     is_active = :is_active
@@ -94,6 +98,7 @@ class SyncClass {
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':price', $this->price);
         $stmt->bindParam(':meeting_link', $this->meeting_link);
+        $stmt->bindParam(':whatsapp_group_link', $this->whatsapp_group_link);
         $stmt->bindParam(':start_date', $this->start_date);
         $stmt->bindParam(':end_date', $this->end_date);
         $stmt->bindParam(':is_active', $this->is_active);

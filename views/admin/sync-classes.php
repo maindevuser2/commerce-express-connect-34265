@@ -27,6 +27,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
     $price = floatval($_POST['price'] ?? 0);
     $meeting_link = trim($_POST['meeting_link'] ?? '');
+    $whatsapp_group_link = trim($_POST['whatsapp_group_link'] ?? '');
     $start_date = $_POST['start_date'] ?? '';
     $end_date = $_POST['end_date'] ?? '';
     
@@ -35,6 +36,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $syncClassModel->description = $description;
         $syncClassModel->price = $price;
         $syncClassModel->meeting_link = $meeting_link;
+        $syncClassModel->whatsapp_group_link = $whatsapp_group_link;
         $syncClassModel->start_date = $start_date;
         $syncClassModel->end_date = $end_date;
         $syncClassModel->is_active = 1;
@@ -55,6 +57,7 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
     $price = floatval($_POST['price'] ?? 0);
     $meeting_link = trim($_POST['meeting_link'] ?? '');
+    $whatsapp_group_link = trim($_POST['whatsapp_group_link'] ?? '');
     $start_date = $_POST['start_date'] ?? '';
     $end_date = $_POST['end_date'] ?? '';
     $is_active = intval($_POST['is_active'] ?? 1);
@@ -65,6 +68,7 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $syncClassModel->description = $description;
         $syncClassModel->price = $price;
         $syncClassModel->meeting_link = $meeting_link;
+        $syncClassModel->whatsapp_group_link = $whatsapp_group_link;
         $syncClassModel->start_date = $start_date;
         $syncClassModel->end_date = $end_date;
         $syncClassModel->is_active = $is_active;
@@ -706,6 +710,11 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                     <div class="form-group">
                         <label>Link de Reunión *</label>
                         <input type="url" name="meeting_link" value="<?php echo htmlspecialchars($editClass['meeting_link'] ?? ''); ?>" placeholder="https://zoom.us/..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Link de Grupo de WhatsApp (Opcional)</label>
+                        <input type="url" name="whatsapp_group_link" value="<?php echo htmlspecialchars($editClass['whatsapp_group_link'] ?? ''); ?>" placeholder="https://chat.whatsapp.com/...">
                     </div>
                     
                     <div class="form-group">

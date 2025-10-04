@@ -75,6 +75,7 @@ class SyncClassController {
                 'start_date' => $syncClass['start_date'],
                 'end_date' => $syncClass['end_date'],
                 'meeting_link' => $syncClass['meeting_link'],
+                'whatsapp_group_link' => $syncClass['whatsapp_group_link'] ?? '',
                 'quantity' => 1
             ];
             
@@ -128,6 +129,7 @@ class SyncClassController {
                         'start_date' => $syncClass['start_date'],
                         'end_date' => $syncClass['end_date'],
                         'meeting_link' => $syncClass['meeting_link'],
+                        'whatsapp_group_link' => $syncClass['whatsapp_group_link'] ?? '',
                         'quantity' => 1,
                         'type' => 'sync_class'
                     ];
