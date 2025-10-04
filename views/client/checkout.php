@@ -16,14 +16,25 @@ use Controllers\CartController;
 $paymentController = new PaymentController();
 $stripePublishableKey = $paymentController->getPublishableKey();
 
-// Las variables $cart_items, $totals y $csrfToken se pasan desde el PaymentController::checkout()
+// Las variables $cart_items, $sync_class_items, $totals y $csrfToken se pasan desde el PaymentController::checkout()
 // Si se accede directamente, inicializarlas
-$cartController = new CartController();
-$cart_items = $cartController->getCartItems();
-$totals = $cartController->calculateTotals($cart_items);
-$csrfToken = $paymentController->generateCSRFToken(); // Generar CSRF aquí si se accede directamente
+if (!isset($cart_items) || !isset($totals)) {
+    require_once __DIR__ . '/../../controllers/SyncClassController.php';
+    use Controllers\SyncClassController;
+    
+    $cartController = new CartController();
+    $syncClassController = new SyncClassController();
+    
+    $cart_items = $cartController->getCartItems();
+    $sync_class_items = $syncClassController->getCartItems();
+    
+    // Combinar items para cálculo de totales
+    $all_items = array_merge($cart_items, $sync_class_items);
+    $totals = $cartController->calculateTotals($all_items);
+    $csrfToken = $paymentController->generateCSRFToken();
+}
 
-if (empty($cart_items) || empty($totals)) {
+if (empty($cart_items) && empty($sync_class_items)) {
     header('Location: cart.php');
     exit();
 }
@@ -277,7 +288,7 @@ $baseUrl = $protocol . '://' . $host . $basePath;
                 <div class="order-summary">
                     <div class="summary-header">
                         <h2>Resumen del Pedido</h2>
-                        <span class="items-count"><?php echo count($cart_items); ?></span>
+                        <span class="items-count"><?php echo count($cart_items) + count($sync_class_items ?? []); ?></span>
                     </div>
                     
                     <div class="cart-items">
@@ -299,6 +310,22 @@ $baseUrl = $protocol . '://' . $host . $basePath;
                                 <div class="item-price">$<?php echo htmlspecialchars(number_format($item['price'], 2)); ?></div>
                             </div>
                         <?php endforeach; ?>
+                        
+                        <?php if (isset($sync_class_items)): ?>
+                            <?php foreach ($sync_class_items as $item): ?>
+                                <div class="cart-item" style="border-left: 3px solid #667eea;">
+                                    <div class="item-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                        <i class="fas fa-video" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <div class="item-details">
+                                        <h3><i class="fas fa-video"></i> <?php echo htmlspecialchars($item['title']); ?></h3>
+                                        <p><i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($item['start_date'])); ?></p>
+                                        <span class="item-level" style="background: #667eea; color: white;">Clase Sincrónica</span>
+                                    </div>
+                                    <div class="item-price">$<?php echo htmlspecialchars(number_format($item['price'], 2)); ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
                     <div class="summary-totals">

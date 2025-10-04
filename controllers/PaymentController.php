@@ -186,14 +186,13 @@ class PaymentController {
                 header('Location: ../views/client/cart.php');
                 exit();
             }
-            
-            $cart_items = $allCartItems;
 
             // Generar token CSRF
             $csrfToken = $this->generateCSRFToken();
 
-            // Pasar datos a la vista
+            // Pasar datos a la vista (ambos tipos de items)
             $cart_items = $cartItems;
+            $sync_class_items = $syncClassItems;
 
             include __DIR__ . '/../views/client/checkout.php';
             
@@ -376,6 +375,7 @@ class PaymentController {
                         
                         // Limpiar carrito y redirigir a confirmación
                         unset($_SESSION['cart']);
+                        unset($_SESSION['cart_sync_classes']);
                         unset($_SESSION['promo_code_applied']);
                         unset($_SESSION['promo_discount_rate']);
                         unset($_SESSION['promo_message']);
