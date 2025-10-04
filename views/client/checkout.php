@@ -12,6 +12,7 @@ require_once __DIR__ . '/../../controllers/CartController.php';
 use Controllers\PaymentController;
 use Controllers\AuthController;
 use Controllers\CartController;
+use Controllers\SyncClassController;
 
 $paymentController = new PaymentController();
 $stripePublishableKey = $paymentController->getPublishableKey();
@@ -20,7 +21,6 @@ $stripePublishableKey = $paymentController->getPublishableKey();
 // Si se accede directamente, inicializarlas
 if (!isset($cart_items) || !isset($totals)) {
     require_once __DIR__ . '/../../controllers/SyncClassController.php';
-    use Controllers\SyncClassController;
     
     $cartController = new CartController();
     $syncClassController = new SyncClassController();
