@@ -54,6 +54,16 @@ class UserSyncClass {
         return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
     }
     
+    // Otorgar acceso a una clase sincrónica
+    public function grantAccess($user_id, $sync_class_id, $order_id) {
+        $this->user_id = $user_id;
+        $this->sync_class_id = $sync_class_id;
+        $this->order_id = $order_id;
+        $this->is_active = 1;
+        
+        return $this->create();
+    }
+    
     // Obtener clases del usuario
     public function readByUserId($user_id) {
         $query = "SELECT sc.*, usc.access_granted_at, usc.order_id
