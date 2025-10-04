@@ -341,14 +341,14 @@ if ($firstAccessDate) {
                     <?php if (!empty($purchasedSyncClasses)): ?>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; margin-bottom: 1rem;">
                         <h3 style="margin: 0;"><i class="fas fa-video"></i> Mis Clases Sincrónicas</h3>
-                        <a href="../../controllers/IcsController.php?action=download_all" class="btn-access" style="background: var(--primary-color); padding: 10px 20px; font-size: 0.9rem;">
-                            <i class="fas fa-download"></i> Descargar Todas las Clases (.ics)
+                        <a href="../../controllers/IcsController.php?action=download_all" class="btn-access btn-download-all" style="background: var(--primary-color);">
+                            <i class="fas fa-download"></i> Descargar Todas (.ics)
                         </a>
                     </div>
                     <div class="courses-grid">
                         <?php foreach ($purchasedSyncClasses as $syncClass): ?>
                             <?php $isPast = strtotime($syncClass['end_date']) < time(); ?>
-                            <div class="course-card" style="border-left: 4px solid #667eea;">
+                            <div class="course-card sync-class-card" style="border-left: 4px solid #667eea;">
                                 <div class="course-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
                                     <div style="text-align: center; color: white;">
                                         <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
@@ -388,8 +388,8 @@ if ($firstAccessDate) {
                                          </a>
                                          <?php endif; ?>
                                          <?php endif; ?>
-                                         <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-access" style="background: #f8f9fa; color: #333; border: 2px solid #e0e0e0;">
-                                             <i class="fas fa-calendar-plus"></i> Agregar a mi Calendario
+                                         <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-access btn-ics-small" style="background: #f8f9fa; color: #333; border: 2px solid #e0e0e0;">
+                                             <i class="fas fa-calendar-plus"></i> Agregar a Calendario
                                          </a>
                                      </div>
                                 </div>
