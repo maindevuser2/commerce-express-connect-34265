@@ -1,3 +1,4 @@
 1. FIX: Problema de recuperar contraseña.
 2. FIX: URL de Comprar en amazon. (Seccion de libros en index.php)
 3. FIX: Filtros en all-books.php
+4. FIX: Filtros en las vistas del administrador

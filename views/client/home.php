@@ -244,72 +244,82 @@ $userDisplayName = getUserDisplayName($currentUser);
         <div class="container">
             <h2>Clases Sincrónicas</h2>
             <p class="section-subtitle">Únete a nuestras clases en vivo y aprende en tiempo real con el profesor</p>
-            
-            <?php if (!empty($activeSyncClasses)): ?>
-            <div class="products-grid">
-                <?php foreach ($activeSyncClasses as $syncClass): ?>
-                    <?php 
-                        $hasAccess = $userSyncClassModel->hasAccess($userId, $syncClass['id']);
-                        $isPast = strtotime($syncClass['end_date']) < time();
-                    ?>
-                    <div class="product-card">
-                        <div class="product-tumb">
-                            <div style="background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
-                                <div style="text-align: center; color: white;">
-                                    <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
-                                    <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
-                                </div>
-                            </div>
-                            <?php if (!$isPast && !$hasAccess): ?>
-                            <div class="course-overlay">
-                                <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-overlay">Agregar al Carrito</button>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="product-details">
-                            <span class="product-catagory">
-                                <?php if ($isPast): ?>
-                                    <i class="fas fa-clock"></i> Finalizada
-                                <?php else: ?>
-                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?>
-                                <?php endif; ?>
-                            </span>
-                            <h4>
-                                <?php echo htmlspecialchars($syncClass['title']); ?>
-                            </h4>
-                            <p><?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase sincrónica en vivo', 0, 100)); ?></p>
-                            <div class="product-bottom-details">
-                                <div class="product-price">
-                                    $<?php echo number_format($syncClass['price'], 2); ?>
-                                </div>
-                                <?php if ($hasAccess): ?>
-                                    <div style="display: flex; gap: 8px; flex-direction: column; width: 100%;">
-                                        <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn">Unirse a la Clase</a>
-                                        <?php if (!empty($syncClass['whatsapp_group_link'])): ?>
-                                        <a href="<?php echo htmlspecialchars($syncClass['whatsapp_group_link']); ?>" target="_blank" class="btn-ics-download" style="background: #25D366; color: white;" title="Unirse al grupo de WhatsApp">
-                                            <i class="fab fa-whatsapp"></i> Unirse al Grupo
-                                        </a>
-                                        <?php endif; ?>
-                                        <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-ics-download" title="Descargar evento para tu calendario">
-                                            <i class="fas fa-calendar-plus"></i> Agregar a Calendario
-                                        </a>
+                <?php if (!empty($activeSyncClasses)): ?>
+                <div class="products-grid">
+                    <?php foreach ($activeSyncClasses as $syncClass): ?>
+                        <?php 
+                            $hasAccess = $userSyncClassModel->hasAccess($userId, $syncClass['id']);
+                            $isPast = strtotime($syncClass['end_date']) < time();
+                        ?>
+                        <div class="product-card">
+                            <div class="product-tumb">
+                                <div style="background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                                    <div style="text-align: center; color: white;">
+                                        <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                                        <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
                                     </div>
-                                <?php elseif ($isPast): ?>
-                                    <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed;" disabled>Finalizada</button>
-                                <?php else: ?>
-                                    <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="add-to-cart-btn">Agregar al Carrito</button>
+                                </div>
+                                <?php if (!$isPast && !$hasAccess): ?>
+                                <div class="course-overlay">
+                                    <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-overlay">Agregar al Carrito</button>
+                                </div>
                                 <?php endif; ?>
                             </div>
+                            <div class="product-details">
+                                <span class="product-catagory">
+                                    <?php if ($isPast): ?>
+                                        <i class="fas fa-clock"></i> Finalizada
+                                    <?php else: ?>
+                                        <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?>
+                                    <?php endif; ?>
+                                </span>
+                                <h4>
+                                    <?php echo htmlspecialchars($syncClass['title']); ?>
+                                </h4>
+                                <p><?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase sincrónica en vivo', 0, 100)); ?></p>
+                                <div class="product-bottom-details" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                    <?php if (!$hasAccess && !$isPast): ?>
+                                        <div class="product-price">
+                                            $<?php echo number_format($syncClass['price'], 2); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if ($hasAccess): ?>
+                                        <div style="display: flex; gap: 8px; flex-direction: column; align-items: center; width: 100%;">
+                                            <a href="<?php echo htmlspecialchars($syncClass['meeting_link']); ?>" target="_blank" class="add-to-cart-btn" style="font-size: 0.9rem; padding: 6px 12px; min-width: 120px; text-align: center;">Unirse a la Clase</a>
+                                            <?php if (!empty($syncClass['whatsapp_group_link'])): ?>
+                                            <a href="<?php echo htmlspecialchars($syncClass['whatsapp_group_link']); ?>" target="_blank" class="btn-ics-download" style="background: #25D366; color: white; font-size: 0.9rem; padding: 6px 12px; min-width: 120px; text-align: center;" title="Unirse al grupo de WhatsApp">
+                                                <i class="fab fa-whatsapp"></i> Unirse al Grupo
+                                            </a>
+                                            <?php endif; ?>
+                                            <?php
+                                            // Google Calendar logic replicada de purchase-history.php
+                                            $title = urlencode($syncClass['title']);
+                                            $details = urlencode($syncClass['description']);
+                                            $location = urlencode($syncClass['meeting_link']);
+                                            $start = date('Ymd\THis', strtotime($syncClass['start_date']));
+                                            $end = date('Ymd\THis', strtotime($syncClass['end_date']));
+                                            $googleCalendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text={$title}&dates={$start}/{$end}&details={$details}&location={$location}";
+                                            ?>
+                                            <a href="<?php echo $googleCalendarUrl; ?>" target="_blank" class="btn-ics-download" style="background: #4285F4; color: white; font-size: 0.9rem; padding: 6px 12px; min-width: 120px; text-align: center;" title="Agregar a Google Calendar">
+                                                <i class="fas fa-calendar-plus"></i> Google Calendar
+                                            </a>
+                                        </div>
+                                    <?php elseif ($isPast): ?>
+                                        <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed; font-size: 0.9rem; padding: 6px 12px; min-width: 120px;" disabled>Finalizada</button>
+                                    <?php else: ?>
+                                        <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="add-to-cart-btn" style="font-size: 0.9rem; padding: 6px 12px; min-width: 120px;">Agregar al Carrito</button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+                    <?php endforeach; ?>
+                </div>
             <?php else: ?>
-            <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px;">
-                <i class="fas fa-calendar-times" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
-                <h3>No hay clases sincrónicas programadas</h3>
-                <p>Pronto anunciaremos nuevas clases en vivo. ¡Mantente atento!</p>
-            </div>
+                <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px;">
+                    <i class="fas fa-calendar-times" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3>No hay clases sincrónicas programadas</h3>
+                    <p>Pronto anunciaremos nuevas clases en vivo. ¡Mantente atento!</p>
+                </div>
             <?php endif; ?>
         </div>
     </section>
