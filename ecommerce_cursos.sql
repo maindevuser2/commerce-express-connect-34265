@@ -355,9 +355,27 @@ CREATE TABLE `sync_classes` (
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `meeting_link` varchar(1000) NOT NULL,
+  `whatsapp_group_link` varchar(1000) DEFAULT NULL,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
+  `status` enum('active','inactive','finished') DEFAULT 'active' COMMENT 'active=Activo, inactive=Inactivo, finished=Finalizado',
   `is_active` tinyint(1) DEFAULT 1,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sync_class_schedules`
+--
+
+CREATE TABLE `sync_class_schedules` (
+  `id` int(11) NOT NULL,
+  `sync_class_id` int(11) NOT NULL,
+  `day_of_week` int(11) NOT NULL COMMENT '0=Domingo, 1=Lunes, 2=Martes, 3=Miércoles, 4=Jueves, 5=Viernes, 6=Sábado',
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -558,6 +576,16 @@ ALTER TABLE `sync_classes`
 ALTER TABLE sync_classes 
 ADD COLUMN whatsapp_group_link VARCHAR(500) NULL DEFAULT NULL 
 AFTER meeting_link;
+
+--
+-- Indices de la tabla `sync_class_schedules`
+--
+ALTER TABLE `sync_class_schedules`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_sync_class_id` (`sync_class_id`),
+  ADD KEY `idx_day_of_week` (`day_of_week`),
+  ADD KEY `idx_start_time` (`start_time`);
+
 --
 -- Indices de la tabla `user_sync_classes`
 --
@@ -657,6 +685,12 @@ ALTER TABLE `sync_classes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `sync_class_schedules`
+--
+ALTER TABLE `sync_class_schedules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `user_sync_classes`
 --
 ALTER TABLE `user_sync_classes`
@@ -711,6 +745,12 @@ ALTER TABLE `user_video_progress`
 --
 ALTER TABLE `videos`
   ADD CONSTRAINT `fk_videos_playlists` FOREIGN KEY (`playlist_id`) REFERENCES `playlists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `sync_class_schedules`
+--
+ALTER TABLE `sync_class_schedules`
+  ADD CONSTRAINT `fk_sync_class_schedules_sync_class` FOREIGN KEY (`sync_class_id`) REFERENCES `sync_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `video_files`

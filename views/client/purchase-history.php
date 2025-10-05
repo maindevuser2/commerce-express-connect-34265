@@ -347,15 +347,30 @@ if ($firstAccessDate) {
                     </div>
                     <div class="courses-grid">
                         <?php foreach ($purchasedSyncClasses as $syncClass): ?>
-                            <?php $isPast = strtotime($syncClass['end_date']) < time(); ?>
+                            <?php 
+                                $status = $syncClass['status'] ?? 'active';
+                                
+                                // Obtener horarios semanales
+                                require_once __DIR__ . '/../../models/SyncClassSchedule.php';
+                                $scheduleModel = new \Models\SyncClassSchedule($pdo);
+                                $schedules = $scheduleModel->readBySyncClass($syncClass['id']);
+                                
+                                // Mapeo de estados a badges
+                                $statusBadges = [
+                                    'active' => ['text' => 'Activo', 'color' => '#28a745'],
+                                    'inactive' => ['text' => 'Inactivo', 'color' => '#ffc107'],
+                                    'finished' => ['text' => 'Finalizado', 'color' => '#6c757d']
+                                ];
+                                $statusInfo = $statusBadges[$status] ?? ['text' => 'Activo', 'color' => '#28a745'];
+                            ?>
                             <div class="course-card sync-class-card" style="border-left: 4px solid #667eea;">
-                                <div class="course-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                                <div class="course-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 200px; position: relative;">
                                     <div style="text-align: center; color: white;">
                                         <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
                                         <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
                                     </div>
-                                    <div class="course-level" style="background-color: <?php echo $isPast ? '#6c757d' : '#28a745'; ?>">
-                                        <?php echo $isPast ? 'Finalizada' : 'Próxima'; ?>
+                                    <div class="course-level" style="background-color: <?php echo $statusInfo['color']; ?>; position: absolute; top: 10px; right: 10px;">
+                                        <?php echo $statusInfo['text']; ?>
                                     </div>
                                 </div>
                                 <div class="course-content">
@@ -364,17 +379,29 @@ if ($firstAccessDate) {
                                         <?php echo htmlspecialchars($syncClass['description'] ?: 'Clase sincrónica en vivo.'); ?>
                                     </p>
                                     <div class="course-meta">
-                                        <span><i class="fas fa-calendar"></i> Inicio: <?php echo date('d M Y H:i', strtotime($syncClass['start_date'])); ?></span>
+                                        <span><i class="fas fa-calendar"></i> Inicio: <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?></span>
                                     </div>
                                     <div class="course-meta">
-                                        <span><i class="fas fa-clock"></i> Fin: <?php echo date('d M Y H:i', strtotime($syncClass['end_date'])); ?></span>
+                                        <span><i class="fas fa-clock"></i> Fin: <?php echo date('d M Y', strtotime($syncClass['end_date'])); ?></span>
                                     </div>
+                                    <?php if (!empty($schedules)): ?>
+                                    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.85rem;">
+                                        <strong style="display: block; margin-bottom: 5px;"><i class="fas fa-clock"></i> Horarios Semanales:</strong>
+                                        <?php foreach ($schedules as $schedule): ?>
+                                            <div style="padding: 3px 0; color: #555;">
+                                                <strong><?php echo \Models\SyncClassSchedule::getDayName($schedule['day_of_week']); ?>:</strong> 
+                                                <?php echo date('H:i', strtotime($schedule['start_time'])); ?> - 
+                                                <?php echo date('H:i', strtotime($schedule['end_time'])); ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <?php endif; ?>
                                     <div class="course-meta">
                                          <span class="course-price">$<?php echo number_format($syncClass['price'] ?? 0, 2); ?></span>
                                          <span><i class="fas fa-check-circle" style="color: var(--teal-color);"></i> Acceso Completo</span>
                                     </div>
                                      <div class="course-actions">
-                                         <?php if ($isPast): ?>
+                                         <?php if ($status === 'finished'): ?>
                                          <button class="btn-access" style="background: #6c757d; cursor: not-allowed;" disabled>
                                              <i class="fas fa-clock"></i> Clase Finalizada
                                          </button>
@@ -387,23 +414,18 @@ if ($firstAccessDate) {
                                              <i class="fab fa-whatsapp"></i> Unirse al Grupo de WhatsApp
                                          </a>
                                          <?php endif; ?>
-                                         <?php endif; ?>
-                                         <a href="../../controllers/IcsController.php?action=download&class_id=<?php echo $syncClass['id']; ?>" class="btn-access btn-ics-small" style="background: #f8f9fa; color: #333; border: 2px solid #e0e0e0;">
-                                             <i class="fas fa-calendar-plus"></i> Agregar a Calendario
-                                         </a>
                                          <?php
-                                         // Generar URL para Google Calendar
-                                         $startDateFormatted = gmdate('Ymd\THis\Z', strtotime($syncClass['start_date']));
-                                         $endDateFormatted = gmdate('Ymd\THis\Z', strtotime($syncClass['end_date']));
-                                         $googleCalendarUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
-                                         $googleCalendarUrl .= '&text=' . urlencode($syncClass['title']);
-                                         $googleCalendarUrl .= '&dates=' . $startDateFormatted . '/' . $endDateFormatted;
-                                         $googleCalendarUrl .= '&details=' . urlencode(($syncClass['description'] ?? '') . "\n\nEnlace de reunión: " . $syncClass['meeting_link']);
-                                         $googleCalendarUrl .= '&location=' . urlencode($syncClass['meeting_link']);
+                                         // Usar GoogleCalendarController para generar URL
+                                         require_once __DIR__ . '/../../controllers/GoogleCalendarController.php';
+                                         $googleCalController = new \Controllers\GoogleCalendarController();
+                                         $calendarResult = $googleCalController->generateGoogleCalendarUrl($syncClass['id']);
+                                         if (isset($calendarResult['url'])):
                                          ?>
-                                         <a href="<?php echo htmlspecialchars($googleCalendarUrl); ?>" target="_blank" class="btn-access btn-ics-small" style="background: #4285f4; color: white; border: 2px solid #4285f4;">
+                                         <a href="<?php echo htmlspecialchars($calendarResult['url']); ?>" target="_blank" class="btn-access btn-ics-small" style="background: #4285f4; color: white; border: 2px solid #4285f4;">
                                              <i class="fab fa-google"></i> Agregar a Google Calendar
                                          </a>
+                                         <?php endif; ?>
+                                         <?php endif; ?>
                                      </div>
                                 </div>
                             </div>

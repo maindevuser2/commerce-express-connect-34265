@@ -13,6 +13,7 @@ class SyncClass {
     public $whatsapp_group_link;
     public $start_date;
     public $end_date;
+    public $status;
     public $is_active;
     public $created_at;
     public $updated_at;
@@ -31,6 +32,7 @@ class SyncClass {
                     whatsapp_group_link = :whatsapp_group_link,
                     start_date = :start_date,
                     end_date = :end_date,
+                    status = :status,
                     is_active = :is_active";
         
         $stmt = $this->conn->prepare($query);
@@ -42,6 +44,7 @@ class SyncClass {
         $stmt->bindParam(':whatsapp_group_link', $this->whatsapp_group_link);
         $stmt->bindParam(':start_date', $this->start_date);
         $stmt->bindParam(':end_date', $this->end_date);
+        $stmt->bindParam(':status', $this->status);
         $stmt->bindParam(':is_active', $this->is_active);
         
         if ($stmt->execute()) {
@@ -59,10 +62,10 @@ class SyncClass {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     
-    // Leer clases activas
+    // Leer clases activas (no finalizadas)
     public function readActive() {
         $query = "SELECT * FROM " . $this->table_name . " 
-                WHERE is_active = 1 
+                WHERE is_active = 1 AND status != 'finished'
                 ORDER BY start_date ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -88,6 +91,7 @@ class SyncClass {
                     whatsapp_group_link = :whatsapp_group_link,
                     start_date = :start_date,
                     end_date = :end_date,
+                    status = :status,
                     is_active = :is_active
                 WHERE id = :id";
         
@@ -101,6 +105,7 @@ class SyncClass {
         $stmt->bindParam(':whatsapp_group_link', $this->whatsapp_group_link);
         $stmt->bindParam(':start_date', $this->start_date);
         $stmt->bindParam(':end_date', $this->end_date);
+        $stmt->bindParam(':status', $this->status);
         $stmt->bindParam(':is_active', $this->is_active);
         
         return $stmt->execute();

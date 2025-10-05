@@ -249,17 +249,33 @@ $userDisplayName = getUserDisplayName($currentUser);
                     <?php foreach ($activeSyncClasses as $syncClass): ?>
                         <?php 
                             $hasAccess = $userSyncClassModel->hasAccess($userId, $syncClass['id']);
-                            $isPast = strtotime($syncClass['end_date']) < time();
+                            $status = $syncClass['status'] ?? 'active';
+                            
+                            // Obtener horarios semanales
+                            require_once __DIR__ . '/../../models/SyncClassSchedule.php';
+                            $scheduleModel = new \Models\SyncClassSchedule($db);
+                            $schedules = $scheduleModel->readBySyncClass($syncClass['id']);
+                            
+                            // Mapeo de estados a badges
+                            $statusBadges = [
+                                'active' => ['text' => 'Activo', 'color' => '#28a745'],
+                                'inactive' => ['text' => 'Inactivo', 'color' => '#ffc107'],
+                                'finished' => ['text' => 'Finalizado', 'color' => '#6c757d']
+                            ];
+                            $statusInfo = $statusBadges[$status] ?? ['text' => 'Activo', 'color' => '#28a745'];
                         ?>
                         <div class="product-card">
                             <div class="product-tumb">
-                                <div style="background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                                <div style="background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); display: flex; align-items: center; justify-content: center; min-height: 200px; position: relative;">
                                     <div style="text-align: center; color: white;">
                                         <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
                                         <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
                                     </div>
+                                    <div style="position: absolute; top: 10px; right: 10px; background: <?php echo $statusInfo['color']; ?>; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                        <?php echo $statusInfo['text']; ?>
+                                    </div>
                                 </div>
-                                <?php if (!$isPast && !$hasAccess): ?>
+                                <?php if ($status !== 'finished' && !$hasAccess): ?>
                                 <div class="course-overlay">
                                     <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-overlay">Agregar al Carrito</button>
                                 </div>
@@ -267,18 +283,26 @@ $userDisplayName = getUserDisplayName($currentUser);
                             </div>
                             <div class="product-details">
                                 <span class="product-catagory">
-                                    <?php if ($isPast): ?>
-                                        <i class="fas fa-clock"></i> Finalizada
-                                    <?php else: ?>
-                                        <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?>
-                                    <?php endif; ?>
+                                    <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($syncClass['start_date'])); ?> - <?php echo date('d M Y', strtotime($syncClass['end_date'])); ?>
                                 </span>
                                 <h4>
                                     <?php echo htmlspecialchars($syncClass['title']); ?>
                                 </h4>
                                 <p><?php echo htmlspecialchars(substr($syncClass['description'] ?: 'Clase sincrónica en vivo', 0, 100)); ?></p>
+                                <?php if (!empty($schedules)): ?>
+                                <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.85rem;">
+                                    <strong style="display: block; margin-bottom: 5px;"><i class="fas fa-clock"></i> Horarios Semanales:</strong>
+                                    <?php foreach ($schedules as $schedule): ?>
+                                        <div style="padding: 3px 0;">
+                                            <?php echo \Models\SyncClassSchedule::getDayName($schedule['day_of_week']); ?>: 
+                                            <?php echo date('H:i', strtotime($schedule['start_time'])); ?> - 
+                                            <?php echo date('H:i', strtotime($schedule['end_time'])); ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
                                 <div class="product-bottom-details" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <?php if (!$hasAccess && !$isPast): ?>
+                                    <?php if (!$hasAccess && $status !== 'finished'): ?>
                                         <div class="product-price">
                                             $<?php echo number_format($syncClass['price'], 2); ?>
                                         </div>
@@ -292,19 +316,18 @@ $userDisplayName = getUserDisplayName($currentUser);
                                             </a>
                                             <?php endif; ?>
                                             <?php
-                                            // Google Calendar logic replicada de purchase-history.php
-                                            $title = urlencode($syncClass['title']);
-                                            $details = urlencode($syncClass['description']);
-                                            $location = urlencode($syncClass['meeting_link']);
-                                            $start = date('Ymd\THis', strtotime($syncClass['start_date']));
-                                            $end = date('Ymd\THis', strtotime($syncClass['end_date']));
-                                            $googleCalendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text={$title}&dates={$start}/{$end}&details={$details}&location={$location}";
+                                            // Usar GoogleCalendarController para generar URL pre-llenada
+                                            require_once __DIR__ . '/../../controllers/GoogleCalendarController.php';
+                                            $googleCalController = new \Controllers\GoogleCalendarController();
+                                            $calendarResult = $googleCalController->generateGoogleCalendarUrl($syncClass['id']);
+                                            if (isset($calendarResult['url'])):
                                             ?>
-                                            <a href="<?php echo $googleCalendarUrl; ?>" target="_blank" class="btn-ics-download" style="background: #4285F4; color: white; font-size: 0.9rem; padding: 6px 12px; min-width: 120px; text-align: center;" title="Agregar a Google Calendar">
+                                            <a href="<?php echo htmlspecialchars($calendarResult['url']); ?>" target="_blank" class="btn-ics-download" style="background: #4285F4; color: white; font-size: 0.9rem; padding: 6px 12px; min-width: 120px; text-align: center;" title="Agregar a Google Calendar">
                                                 <i class="fas fa-calendar-plus"></i> Google Calendar
                                             </a>
+                                            <?php endif; ?>
                                         </div>
-                                    <?php elseif ($isPast): ?>
+                                    <?php elseif ($status === 'finished'): ?>
                                         <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed; font-size: 0.9rem; padding: 6px 12px; min-width: 120px;" disabled>Finalizada</button>
                                     <?php else: ?>
                                         <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="add-to-cart-btn" style="font-size: 0.9rem; padding: 6px 12px; min-width: 120px;">Agregar al Carrito</button>
@@ -321,6 +344,11 @@ $userDisplayName = getUserDisplayName($currentUser);
                     <p>Pronto anunciaremos nuevas clases en vivo. ¡Mantente atento!</p>
                 </div>
             <?php endif; ?>
+            <div class="view-more" style="margin-top: 2rem;">
+                <a href="all-sync-classes.php" style="display: inline-block; padding: 0.75rem 2rem; background: linear-gradient(135deg, #8a56e2 0%, #56e2c6 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+                    Ver Todas las Clases Sincrónicas <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
     </section>
 
