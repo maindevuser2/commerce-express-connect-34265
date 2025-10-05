@@ -7,3 +7,4 @@ FIXME
 TODO
 1. Unificar los footer y el nav
 2. Unificar el nav
+3. Agregar un boton o flecha en el login y signup para volver al index.php
