@@ -690,6 +690,17 @@ ALTER TABLE `sync_classes`
 ALTER TABLE `sync_class_schedules`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+
+UPDATE sync_classes 
+SET status = 'upcoming' 
+WHERE status = 'inactive';
+
+-- Modificar la columna para incluir los nuevos valores de enum
+ALTER TABLE sync_classes 
+MODIFY COLUMN status ENUM('active', 'upcoming', 'ending_soon', 'finished') 
+DEFAULT 'active';
+
+
 --
 -- AUTO_INCREMENT de la tabla `user_sync_classes`
 --

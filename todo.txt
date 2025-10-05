@@ -1,4 +1,9 @@
-1. FIX: Problema de recuperar contraseña.
-2. FIX: URL de Comprar en amazon. (Seccion de libros en index.php)
-3. FIX: Filtros en all-books.php
-4. FIX: Filtros en las vistas del administrador
+FIXME
+1. FIX: Sistema de recuperar contraseña.
+2. FIX: Filtros en all-books.php
+3. FIX: Filtros en las vistas del administrador
+4. FIX: Calendario no pudo cargar los datos. Intenta cargarlos más tarde. (Al darle en "agregar al calendario de google arroja ese resultado desde el calendario de google)
+
+TODO
+1. Unificar los footer y el nav
+2. Unificar el nav
