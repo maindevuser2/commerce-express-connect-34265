@@ -53,7 +53,8 @@ $cartCount = $cartController->getCartCount() + $syncCartCount;
 // Mapeo de estados a badges
 $statusBadges = [
     'active' => ['text' => 'Activo', 'color' => '#28a745'],
-    'inactive' => ['text' => 'Inactivo', 'color' => '#ffc107'],
+    'upcoming' => ['text' => 'Por Empezar', 'color' => '#17a2b8'],
+    'ending_soon' => ['text' => 'Por Terminar', 'color' => '#ff6b6b'],
     'finished' => ['text' => 'Finalizado', 'color' => '#6c757d']
 ];
 ?>
@@ -268,6 +269,7 @@ $statusBadges = [
                             $hasAccess = $isAuthenticated ? $userSyncClassModel->hasAccess($userId, $syncClass['id']) : false;
                             $status = $syncClass['status'] ?? 'active';
                             $statusInfo = $statusBadges[$status] ?? ['text' => 'Activo', 'color' => '#28a745'];
+                            $showPrecompra = ($status === 'upcoming');
                             
                             // Obtener horarios semanales
                             $schedules = $scheduleModel->readBySyncClass($syncClass['id']);
@@ -276,8 +278,15 @@ $statusBadges = [
                                 <div class="sync-class-header">
                                     <i class="fas fa-video"></i>
                                     <h3>Clase en Vivo</h3>
-                                    <div class="status-badge" style="background: <?php echo $statusInfo['color']; ?>;">
-                                        <?php echo $statusInfo['text']; ?>
+                                    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; flex-direction: column; align-items: flex-end;">
+                                        <div class="status-badge" style="background: <?php echo $statusInfo['color']; ?>;">
+                                            <?php echo $statusInfo['text']; ?>
+                                        </div>
+                                        <?php if ($showPrecompra): ?>
+                                        <div style="background: rgba(255, 255, 255, 0.9); color: #8a56e2; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                            Disponible en Pre-compra
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 
@@ -345,8 +354,8 @@ $statusBadges = [
                                                 </a>
                                                 <?php endif; ?>
                                             </div>
-                                        <?php elseif ($status === 'inactive'): ?>
-                                            <span class="price-tag">
+                                        <?php elseif ($status === 'ending_soon'): ?>
+                                            <span class="price-tag" style="text-decoration: line-through; opacity: 0.6;">
                                                 $<?php echo number_format($syncClass['price'], 2); ?>
                                             </span>
                                             <button class="btn btn-outline" disabled style="opacity: 0.5; cursor: not-allowed;">

@@ -259,10 +259,12 @@ $userDisplayName = getUserDisplayName($currentUser);
                             // Mapeo de estados a badges
                             $statusBadges = [
                                 'active' => ['text' => 'Activo', 'color' => '#28a745'],
-                                'inactive' => ['text' => 'Inactivo', 'color' => '#ffc107'],
+                                'upcoming' => ['text' => 'Por Empezar', 'color' => '#17a2b8'],
+                                'ending_soon' => ['text' => 'Por Terminar', 'color' => '#ff6b6b'],
                                 'finished' => ['text' => 'Finalizado', 'color' => '#6c757d']
                             ];
                             $statusInfo = $statusBadges[$status] ?? ['text' => 'Activo', 'color' => '#28a745'];
+                            $showPrecompra = ($status === 'upcoming');
                         ?>
                         <div class="product-card">
                             <div class="product-tumb">
@@ -271,11 +273,18 @@ $userDisplayName = getUserDisplayName($currentUser);
                                         <i class="fas fa-video" style="font-size: 4rem; margin-bottom: 1rem;"></i>
                                         <p style="font-size: 1.2rem; font-weight: 600;">Clase en Vivo</p>
                                     </div>
-                                    <div style="position: absolute; top: 10px; right: 10px; background: <?php echo $statusInfo['color']; ?>; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
-                                        <?php echo $statusInfo['text']; ?>
+                                    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; flex-direction: column; align-items: flex-end;">
+                                        <div style="background: <?php echo $statusInfo['color']; ?>; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                            <?php echo $statusInfo['text']; ?>
+                                        </div>
+                                        <?php if ($showPrecompra): ?>
+                                        <div style="background: rgba(255, 255, 255, 0.9); color: #8a56e2; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                            Disponible en Pre-compra
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if ($status !== 'finished' && !$hasAccess): ?>
+                                <?php if ($status !== 'finished' && $status !== 'ending_soon' && !$hasAccess): ?>
                                 <div class="course-overlay">
                                     <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="btn-overlay">Agregar al Carrito</button>
                                 </div>
@@ -302,7 +311,7 @@ $userDisplayName = getUserDisplayName($currentUser);
                                 </div>
                                 <?php endif; ?>
                                 <div class="product-bottom-details" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <?php if (!$hasAccess && $status !== 'finished'): ?>
+                                    <?php if (!$hasAccess && $status !== 'finished' && $status !== 'ending_soon'): ?>
                                         <div class="product-price">
                                             $<?php echo number_format($syncClass['price'], 2); ?>
                                         </div>
@@ -329,6 +338,8 @@ $userDisplayName = getUserDisplayName($currentUser);
                                         </div>
                                     <?php elseif ($status === 'finished'): ?>
                                         <button class="add-to-cart-btn" style="opacity: 0.5; cursor: not-allowed; font-size: 0.9rem; padding: 6px 12px; min-width: 120px;" disabled>Finalizada</button>
+                                    <?php elseif ($status === 'ending_soon'): ?>
+                                        <button class="add-to-cart-btn" style="background: #ff6b6b; opacity: 0.5; cursor: not-allowed; font-size: 0.9rem; padding: 6px 12px; min-width: 120px;" disabled>No Disponible</button>
                                     <?php else: ?>
                                         <button onclick="addSyncClassToCart(<?php echo $syncClass['id']; ?>)" class="add-to-cart-btn" style="font-size: 0.9rem; padding: 6px 12px; min-width: 120px;">Agregar al Carrito</button>
                                     <?php endif; ?>
