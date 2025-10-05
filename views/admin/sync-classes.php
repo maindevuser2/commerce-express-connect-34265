@@ -528,6 +528,21 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             color: white;
         }
 
+        .status-upcoming {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .status-ending_soon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .status-finished {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+
         .action-buttons {
             display: flex;
             gap: 0.5rem;
@@ -879,8 +894,9 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                             $status = $class['status'] ?? 'active';
                             $statusBadges = [
                                 'active' => ['text' => 'Activo', 'class' => 'status-active'],
-                                'inactive' => ['text' => 'Inactivo', 'class' => 'status-inactive'],
-                                'finished' => ['text' => 'Finalizado', 'class' => 'status-inactive']
+                                'upcoming' => ['text' => 'Por Empezar', 'class' => 'status-upcoming'],
+                                'ending_soon' => ['text' => 'Por Terminar', 'class' => 'status-ending_soon'],
+                                'finished' => ['text' => 'Finalizado', 'class' => 'status-finished']
                             ];
                             $statusInfo = $statusBadges[$status] ?? $statusBadges['active'];
                             ?>
