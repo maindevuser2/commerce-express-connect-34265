@@ -104,15 +104,36 @@ $statusBadges = [
             text-align: center;
         }
         
-        .status-badge {
+        .status-badges-container {
             position: absolute;
             top: 10px;
             right: 10px;
-            padding: 4px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+            max-width: 200px;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: white;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .precompra-badge {
+            background: rgba(255, 255, 255, 0.95);
+            color: #8a56e2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .sync-class-content {
@@ -278,13 +299,13 @@ $statusBadges = [
                                 <div class="sync-class-header">
                                     <i class="fas fa-video"></i>
                                     <h3>Clase en Vivo</h3>
-                                    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; flex-direction: column; align-items: flex-end;">
+                                    <div class="status-badges-container">
                                         <div class="status-badge" style="background: <?php echo $statusInfo['color']; ?>;">
                                             <?php echo $statusInfo['text']; ?>
                                         </div>
                                         <?php if ($showPrecompra): ?>
-                                        <div style="background: rgba(255, 255, 255, 0.9); color: #8a56e2; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                            Disponible en Pre-compra
+                                        <div class="precompra-badge">
+                                            Pre-compra
                                         </div>
                                         <?php endif; ?>
                                     </div>
