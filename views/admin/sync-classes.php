@@ -761,7 +761,8 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                         <label>Estado de la Clase *</label>
                         <select name="status">
                             <option value="active" <?php echo (!$editClass || ($editClass['status'] ?? 'active') == 'active') ? 'selected' : ''; ?>>Activo</option>
-                            <option value="inactive" <?php echo ($editClass && ($editClass['status'] ?? '') == 'inactive') ? 'selected' : ''; ?>>Inactivo</option>
+                            <option value="upcoming" <?php echo ($editClass && ($editClass['status'] ?? '') == 'upcoming') ? 'selected' : ''; ?>>Por Empezar (Pre-compra)</option>
+                            <option value="ending_soon" <?php echo ($editClass && ($editClass['status'] ?? '') == 'ending_soon') ? 'selected' : ''; ?>>Por Terminar</option>
                             <option value="finished" <?php echo ($editClass && ($editClass['status'] ?? '') == 'finished') ? 'selected' : ''; ?>>Finalizado</option>
                         </select>
                     </div>
