@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../models/Playlist.php';
 require_once __DIR__ . '/../../models/UserCourse.php';
 require_once __DIR__ . '/../../controllers/CartController.php';
 require_once __DIR__ . '/../../models/Book.php';
+require_once __DIR__ . '/../../models/AdminContactInfo.php';
 
 use Controllers\AuthController;
 use Models\Playlist;
@@ -28,6 +29,10 @@ $db = $database->getConnection();
 $playlistModel = new Playlist($db);
 $userCourseModel = new UserCourse($db);
 $bookModel = new Book($db);
+
+// Obtener información de contacto
+$contactModel = new \Models\AdminContactInfo($db);
+$contactInfo = $contactModel->get();
 
 // Obtener usuario actual
 $currentUser = AuthController::getCurrentUser();
@@ -464,6 +469,289 @@ $userDisplayName = getUserDisplayName($currentUser);
             </div>
         </div>
     </section>
+
+    <!-- Private Classes Section -->
+    <section id="clases-privadas" class="private-classes">
+        <div class="container">
+            <div class="private-classes-content">
+                <div class="private-classes-header">
+                    <h2>Clases Privadas Personalizadas</h2>
+                    <p class="section-subtitle">¿Necesitas un enfoque más personalizado? Agenda una clase privada conmigo y avanza a tu propio ritmo</p>
+                </div>
+                
+                <div class="private-classes-grid">
+                    <div class="private-class-card">
+                        <div class="private-class-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3>Atención Personalizada</h3>
+                        <p>Clases uno a uno diseñadas específicamente para tus necesidades y objetivos de aprendizaje</p>
+                    </div>
+                    
+                    <div class="private-class-card">
+                        <div class="private-class-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Horarios Flexibles</h3>
+                        <p>Agenda tus clases cuando más te convenga, adaptándose a tu estilo de vida</p>
+                    </div>
+                    
+                    <div class="private-class-card">
+                        <div class="private-class-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Progreso Acelerado</h3>
+                        <p>Avanza más rápido con un plan de estudios personalizado y retroalimentación constante</p>
+                    </div>
+                </div>
+                
+                <div class="private-classes-cta">
+                    <h3>¿Listo para empezar?</h3>
+                    <p>Contáctame por WhatsApp y conversemos sobre tus objetivos de aprendizaje</p>
+                    <a href="https://wa.me/<?php echo htmlspecialchars($contactInfo['whatsapp_number'] ?? '573123456789'); ?>?text=Hola,%20estoy%20interesado%20en%20clases%20privadas%20de%20inglés" 
+                       target="_blank" 
+                       class="btn-whatsapp-large">
+                        <i class="fab fa-whatsapp"></i> Contáctame por WhatsApp
+                    </a>
+                </div>
+                
+                <div class="social-media-section">
+                    <h3>Sígueme en Redes Sociales</h3>
+                    <p>Encuentra tips, consejos y contenido exclusivo en mis redes</p>
+                    <div class="social-links">
+                        <a href="<?php echo htmlspecialchars($contactInfo['instagram_url'] ?? 'https://instagram.com/profehernan'); ?>" target="_blank" class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($contactInfo['facebook_url'] ?? 'https://facebook.com/profehernan'); ?>" target="_blank" class="social-link facebook">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="<?php echo htmlspecialchars($contactInfo['youtube_url'] ?? 'https://youtube.com/@profehernan'); ?>" target="_blank" class="social-link youtube">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                        <a href="https://wa.me/<?php echo htmlspecialchars($contactInfo['whatsapp_number'] ?? '573123456789'); ?>" target="_blank" class="social-link whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <style>
+    .private-classes {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%);
+        color: white;
+    }
+    
+    .private-classes-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .private-classes-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: white;
+    }
+    
+    .private-classes-header .section-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin: 0 auto;
+        color: white;
+    }
+    
+    .private-classes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .private-class-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 40px 30px;
+        border-radius: 15px;
+        text-align: center;
+        transition: transform 0.3s ease, background 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .private-class-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .private-class-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+    
+    .private-class-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: white;
+    }
+    
+    .private-class-card p {
+        opacity: 0.9;
+        line-height: 1.6;
+        color: white;
+    }
+    
+    .private-classes-cta {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 50px;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 60px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+    
+    .private-classes-cta h3 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .private-classes-cta p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .btn-whatsapp-large {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 40px;
+        background: #25D366;
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+    }
+    
+    .btn-whatsapp-large:hover {
+        background: #128C7E;
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
+    }
+    
+    .btn-whatsapp-large i {
+        font-size: 1.5rem;
+    }
+    
+    .social-media-section {
+        text-align: center;
+    }
+    
+    .social-media-section h3 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: white;
+    }
+    
+    .social-media-section p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        color: white;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .social-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 25px 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        min-width: 140px;
+    }
+    
+    .social-link i {
+        font-size: 2.5rem;
+    }
+    
+    .social-link span {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .social-link.instagram:hover {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+    
+    .social-link.facebook:hover {
+        background: #1877F2;
+    }
+    
+    .social-link.youtube:hover {
+        background: #FF0000;
+    }
+    
+    .social-link.whatsapp:hover {
+        background: #25D366;
+    }
+    
+    @media (max-width: 768px) {
+        .private-classes {
+            padding: 60px 0;
+        }
+        
+        .private-classes-header h2 {
+            font-size: 2rem;
+        }
+        
+        .private-classes-cta {
+            padding: 30px 20px;
+        }
+        
+        .social-links {
+            gap: 15px;
+        }
+        
+        .social-link {
+            min-width: 120px;
+            padding: 20px;
+        }
+    }
+    </style>
 
     <!-- Footer -->
     <footer class="footer">

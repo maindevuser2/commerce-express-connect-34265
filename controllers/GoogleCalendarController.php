@@ -88,23 +88,46 @@ class GoogleCalendarController {
         $description .= "\n\nEnlace de reunión: " . $syncClass['meeting_link'];
         $description = urlencode($description);
         
-        // Formatear fechas para Google Calendar
-        $startDate = $this->formatDateForGoogle($syncClass['start_date']);
-        $endDate = $this->formatDateForGoogle($syncClass['end_date']);
-        
-        // Crear regla de recurrencia si hay horarios
-        $recurrence = '';
+        // Calcular fecha y hora del primer evento
         if (!empty($schedules)) {
-            // Agrupar horarios por día
+            // Ordenar horarios por día de semana
+            usort($schedules, function($a, $b) {
+                return $a['day_of_week'] <=> $b['day_of_week'];
+            });
+            
+            $firstSchedule = $schedules[0];
+            $startDateBase = strtotime($syncClass['start_date']);
+            
+            // Encontrar el primer día que coincide con el horario programado
+            $targetDayOfWeek = $firstSchedule['day_of_week'];
+            $currentDayOfWeek = date('w', $startDateBase);
+            
+            // Calcular cuántos días faltan para llegar al primer día de clase
+            $daysUntilFirst = ($targetDayOfWeek - $currentDayOfWeek + 7) % 7;
+            $firstClassDate = strtotime("+{$daysUntilFirst} days", $startDateBase);
+            
+            // Crear DateTime para el primer evento con la hora específica
+            $startDateTime = date('Y-m-d', $firstClassDate) . ' ' . $firstSchedule['start_time'];
+            $endDateTime = date('Y-m-d', $firstClassDate) . ' ' . $firstSchedule['end_time'];
+            
+            $startDate = $this->formatDateForGoogle($startDateTime);
+            $endDate = $this->formatDateForGoogle($endDateTime);
+            
+            // Crear regla de recurrencia para los días seleccionados
             $daysWithClasses = [];
             foreach ($schedules as $schedule) {
                 $daysWithClasses[] = $this->getGoogleDayAbbreviation($schedule['day_of_week']);
             }
             $daysStr = implode(',', array_unique($daysWithClasses));
             
-            // Calcular fecha final para recurrencia
-            $untilDate = date('Ymd', strtotime($syncClass['end_date']));
+            // Calcular fecha final para recurrencia (formato YYYYMMDD sin horas)
+            $untilDate = date('Ymd\T235959\Z', strtotime($syncClass['end_date']));
             $recurrence = urlencode("RRULE:FREQ=WEEKLY;BYDAY={$daysStr};UNTIL={$untilDate}");
+        } else {
+            // Si no hay horarios, usar fechas generales
+            $startDate = $this->formatDateForGoogle($syncClass['start_date']);
+            $endDate = $this->formatDateForGoogle($syncClass['end_date']);
+            $recurrence = '';
         }
         
         $location = urlencode($syncClass['meeting_link']);
@@ -115,7 +138,7 @@ class GoogleCalendarController {
         $url .= "&dates=" . $startDate . "/" . $endDate;
         $url .= "&details=" . $description;
         $url .= "&location=" . $location;
-        if ($recurrence) {
+        if (!empty($recurrence)) {
             $url .= "&recur=" . $recurrence;
         }
         

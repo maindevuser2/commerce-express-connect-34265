@@ -49,10 +49,12 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($syncClassModel->create()) {
             $newClassId = $syncClassModel->id;
             
-            // Guardar horarios semanales
+            // Guardar horarios semanales - SOLO si el día está seleccionado (no vacío)
             if (isset($_POST['schedules']) && is_array($_POST['schedules'])) {
                 foreach ($_POST['schedules'] as $schedule) {
-                    if (!empty($schedule['day']) && !empty($schedule['start_time']) && !empty($schedule['end_time'])) {
+                    // Verificar que el día esté seleccionado (no vacío) y tenga horas válidas
+                    if (isset($schedule['day']) && $schedule['day'] !== '' && 
+                        !empty($schedule['start_time']) && !empty($schedule['end_time'])) {
                         $scheduleModel->sync_class_id = $newClassId;
                         $scheduleModel->day_of_week = intval($schedule['day']);
                         $scheduleModel->start_time = $schedule['start_time'];
@@ -99,10 +101,12 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] === 'POST') {
             // Eliminar horarios antiguos
             $scheduleModel->deleteBySyncClass($classId);
             
-            // Guardar nuevos horarios
+            // Guardar nuevos horarios - SOLO si el día está seleccionado (no vacío)
             if (isset($_POST['schedules']) && is_array($_POST['schedules'])) {
                 foreach ($_POST['schedules'] as $schedule) {
-                    if (!empty($schedule['day']) && !empty($schedule['start_time']) && !empty($schedule['end_time'])) {
+                    // Verificar que el día esté seleccionado (no vacío) y tenga horas válidas
+                    if (isset($schedule['day']) && $schedule['day'] !== '' && 
+                        !empty($schedule['start_time']) && !empty($schedule['end_time'])) {
                         $scheduleModel->sync_class_id = $classId;
                         $scheduleModel->day_of_week = intval($schedule['day']);
                         $scheduleModel->start_time = $schedule['start_time'];
@@ -997,7 +1001,7 @@ if ($action === 'edit' && $classId && $_SERVER['REQUEST_METHOD'] !== 'POST') {
         });
 
         function addToGoogleCalendar(classId) {
-            window.open('/controllers/GoogleCalendarController.php?action=add&class_id=' + classId, '_blank');
+            window.open('../../controllers/GoogleCalendarController.php?action=add&class_id=' + classId, '_blank');
         }
 
         // Responsive sidebar

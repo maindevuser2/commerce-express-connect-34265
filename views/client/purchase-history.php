@@ -54,7 +54,7 @@ $purchasedSyncClasses = $userSyncClassModel->readByUserId($userId);
 // Obtener estadísticas del usuario
 try {
     $userStats = [
-        'total_courses' => count($purchasedCourses),
+        'total_courses' => count($purchasedCourses) + count($purchasedSyncClasses), // Incluir clases sincrónicas
         'total_spent' => 0,
         'different_levels' => 0,
         'first_purchase' => null
@@ -249,13 +249,13 @@ if ($firstAccessDate) {
            <!-- Statistics -->
            <?php if (!empty($userStats)): ?>
                <div class="stats-grid">
-                   <div class="stat-card">
-                       <div class="icon courses">
-                           <i class="fas fa-book"></i>
-                       </div>
-                       <div class="number"><?php echo $userStats['total_courses'] ?? 0; ?></div>
-                       <div class="label">Cursos Adquiridos</div>
-                   </div>
+                    <div class="stat-card">
+                        <div class="icon courses">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="number"><?php echo $userStats['total_courses'] ?? 0; ?></div>
+                        <div class="label">Cursos y Clases</div>
+                    </div>
 
                     <div class="stat-card">
                         <div class="icon spent">
@@ -448,25 +448,41 @@ if ($firstAccessDate) {
            <div id="orders-tab" class="tab-content">
                <?php if (!empty($orders)): ?>
                    <div class="orders-table">
-                       <div class="table-header table-row">
-                           <div>Pedido #</div>
-                           <div>Cursos</div>
-                           <div>Total</div>
-                           <div>Estado</div>
-                           <div>Fecha</div>
-                       </div>
-                       <?php foreach ($orders as $order): ?>
-                           <div class="table-row">
-                               <div>
-                                   <strong>#<?php echo htmlspecialchars($order['id'] ?? ''); ?></strong>
-                               </div>
-                               <div>
-                                   <?php if (!empty($order['courses_purchased'])): ?>
-                                       <?php echo htmlspecialchars($order['courses_purchased']); ?>
-                                   <?php else: ?>
-                                       <?php echo ($order['course_count'] ?? 0); ?> curso(s)
-                                   <?php endif; ?>
-                               </div>
+                        <div class="table-header table-row">
+                            <div>Pedido #</div>
+                            <div>Contenido</div>
+                            <div>Total</div>
+                            <div>Estado</div>
+                            <div>Fecha</div>
+                        </div>
+                        <?php foreach ($orders as $order): ?>
+                            <div class="table-row">
+                                <div>
+                                    <strong>#<?php echo htmlspecialchars($order['id'] ?? ''); ?></strong>
+                                </div>
+                                <div>
+                                    <?php 
+                                    // Obtener cursos y clases de esta orden
+                                    $orderCourses = $userCourseModel->getCoursesByOrderId($order['id']);
+                                    $orderSyncClasses = $userSyncClassModel->getSyncClassesByOrderId($order['id']);
+                                    $totalItems = count($orderCourses) + count($orderSyncClasses);
+                                    
+                                    $itemsText = [];
+                                    if (count($orderCourses) > 0) {
+                                        $itemsText[] = count($orderCourses) . ' curso(s)';
+                                    }
+                                    if (count($orderSyncClasses) > 0) {
+                                        $itemsText[] = count($orderSyncClasses) . ' clase(s)';
+                                    }
+                                    
+                                    // Si no hay items actuales pero la orden existe, mostrar mensaje informativo
+                                    if (empty($itemsText)) {
+                                        echo '<span style="color: #6c757d; font-style: italic;">Contenido eliminado</span>';
+                                    } else {
+                                        echo implode(' + ', $itemsText);
+                                    }
+                                    ?>
+                                </div>
                                <div>
                                    <strong>$<?php echo number_format($order['amount'] ?? 0, 2); ?></strong>
                                </div>

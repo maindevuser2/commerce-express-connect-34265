@@ -22,6 +22,10 @@ $database = new \Database();
 $db = $database->getConnection();
 $userModel = new User($db);
 
+// Cargar modelo de información de contacto
+require_once __DIR__ . '/../../models/AdminContactInfo.php';
+$contactModel = new \Models\AdminContactInfo($db);
+
 if (!isset($_SESSION['user']) && isset($_SESSION['user_id'])) {
     $_SESSION['user'] = [
         'id' => $_SESSION['user_id'],
@@ -101,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $firstName = trim($_POST['first_name'] ?? '');
     $lastName = trim($_POST['last_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
     
     // Validaciones básicas
     if (empty($firstName) || empty($lastName) || empty($email)) {
@@ -116,12 +121,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             // Actualizar perfil
             $stmt = $db->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, updated_at = NOW() WHERE id = ?");
             if ($stmt->execute([$firstName, $lastName, $email, $userId])) {
+                // Actualizar teléfono en admin_contact_info
+                if (!empty($phone)) {
+                    $contactInfo = $contactModel->get();
+                    $contactData = [
+                        'phone' => $phone,
+                        'instagram_url' => $contactInfo['instagram_url'] ?? 'https://instagram.com/profehernan',
+                        'facebook_url' => $contactInfo['facebook_url'] ?? 'https://facebook.com/profehernan',
+                        'youtube_url' => $contactInfo['youtube_url'] ?? 'https://youtube.com/@profehernan',
+                        'whatsapp_number' => $contactInfo['whatsapp_number'] ?? $phone
+                    ];
+                    $contactModel->update($contactData);
+                }
+                
                 $success = '¡Perfil actualizado exitosamente! 🎊';
                 // Actualizar datos en sesión
                 $_SESSION['user']['first_name'] = $firstName;
                 $_SESSION['user']['last_name'] = $lastName;
                 $_SESSION['user']['email'] = $email;
-
 
                 // Obtener datos frescos de la base de datos
                 $currentUser = $userModel->findById($userId);
@@ -132,6 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         }
     }
 }
+
+// Obtener información de contacto actual
+$contactInfo = $contactModel->get();
 ?>
 
 <!DOCTYPE html>
@@ -547,12 +567,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                         <div class="input-with-icon">
                             <i class="fas fa-envelope"></i>
                             <input 
-                                type="email" 
+                                type="email"
                                 id="email" 
                                 name="email" 
                                 class="form-input"
                                 value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>"
                                 required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Número de Teléfono</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input 
+                                type="text"
+                                id="phone" 
+                                name="phone" 
+                                class="form-input"
+                                value="<?php echo htmlspecialchars($contactInfo['phone'] ?? ''); ?>"
+                                placeholder="573123456789"
                             >
                         </div>
                     </div>
