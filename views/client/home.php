@@ -127,8 +127,11 @@ $userDisplayName = getUserDisplayName($currentUser);
             
             <nav class="nav">
                 <ul>
-                    <li><a href="home.php" class="active">Inicio</a></li>
-                    <li><a href="all-courses.php">Cursos</a></li>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#best-sellers">Cursos</a></li>
+                    <li><a href="#clases-privadas">Clases Privadas</a></li>
+                    <li><a href="#sobre-nosotros">Sobre Nosotros</a></li>
+                    <li><a href="all-courses.php">Todos los Cursos</a></li>
                     <li><a href="cart.php">
                         <i class="fas fa-shopping-cart"></i>
                         Carrito
@@ -152,7 +155,7 @@ $userDisplayName = getUserDisplayName($currentUser);
     </header>
 
     <!-- Banner Section -->
-    <section class="banner">
+    <section id="inicio" class="banner">
         <div class="container">
             <div class="banner-content">
                 <div class="banner-text">
@@ -1049,5 +1052,8 @@ function addSyncClassToCart(classId) {
     });
 }
     </script>
+    
+    <!-- Smooth Scroll Script -->
+    <script src="../../public/js/smooth-scroll.js"></script>
 </body>
 </html>
