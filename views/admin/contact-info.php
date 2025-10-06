@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'instagram_url' => $_POST['instagram_url'] ?? '',
         'facebook_url' => $_POST['facebook_url'] ?? '',
         'youtube_url' => $_POST['youtube_url'] ?? '',
-        'whatsapp_number' => $_POST['whatsapp_number'] ?? ''
+        'whatsapp_number' => $_POST['whatsapp_number'] ?? '',
+        'whatsapp_channel' => $_POST['whatsapp_channel'] ?? ''
     ];
 
     if ($contactModel->update($data)) {
@@ -355,7 +356,7 @@ $currentUser = AuthController::getCurrentUser();
                         </div>
 
                         <div class="form-group">
-                            <label for="whatsapp_number">Número de WhatsApp</label>
+                            <label for="whatsapp_number">Número de WhatsApp Personal</label>
                             <input 
                                 type="text" 
                                 id="whatsapp_number" 
@@ -405,6 +406,18 @@ $currentUser = AuthController::getCurrentUser();
                                 placeholder="https://youtube.com/@tu_canal"
                                 required
                             >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="whatsapp_channel">Canal de WhatsApp</label>
+                            <input 
+                                type="url" 
+                                id="whatsapp_channel" 
+                                name="whatsapp_channel" 
+                                value="<?php echo htmlspecialchars($contactInfo['whatsapp_channel'] ?? ''); ?>" 
+                                placeholder="https://whatsapp.com/channel/..."
+                            >
+                            <small>URL del canal de WhatsApp (opcional)</small>
                         </div>
                     </div>
 

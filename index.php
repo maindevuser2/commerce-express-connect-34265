@@ -295,37 +295,37 @@ try {
     <?php endif; ?>
 
     <!-- Private Classes Section -->
-    <section id="clases-privadas" class="private-classes">
+    <section id="clases-privadas" class="private-classes" style="background: #f8f9fa;">
         <div class="container">
             <div class="private-classes-content">
                 <div class="private-classes-header">
-                    <h2>Clases Privadas Personalizadas</h2>
-                    <p class="section-subtitle">¿Necesitas un enfoque más personalizado? Agenda una clase privada conmigo y avanza a tu propio ritmo</p>
+                    <h2 style="color: #333;">Clases Privadas Personalizadas</h2>
+                    <p class="section-subtitle" style="color: #666;">¿Necesitas un enfoque más personalizado? Agenda una clase privada conmigo y avanza a tu propio ritmo</p>
                 </div>
                 
-                <div class="private-classes-grid">
-                    <div class="private-class-card">
-                        <div class="private-class-icon">
+                <div class="private-classes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
+                    <div class="private-class-card" style="background: white; padding: 40px 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                        <div class="private-class-icon" style="background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; color: white;">
                             <i class="fas fa-user-graduate"></i>
                         </div>
-                        <h3>Atención Personalizada</h3>
-                        <p>Clases uno a uno diseñadas específicamente para tus necesidades y objetivos de aprendizaje</p>
+                        <h3 style="color: #333; margin-bottom: 15px; font-size: 1.3rem;">Atención Personalizada</h3>
+                        <p style="color: #666; line-height: 1.6;">Clases uno a uno diseñadas específicamente para tus necesidades y objetivos de aprendizaje</p>
                     </div>
                     
-                    <div class="private-class-card">
-                        <div class="private-class-icon">
+                    <div class="private-class-card" style="background: white; padding: 40px 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                        <div class="private-class-icon" style="background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; color: white;">
                             <i class="fas fa-calendar-check"></i>
                         </div>
-                        <h3>Horarios Flexibles</h3>
-                        <p>Agenda tus clases cuando más te convenga, adaptándose a tu estilo de vida</p>
+                        <h3 style="color: #333; margin-bottom: 15px; font-size: 1.3rem;">Horarios Flexibles</h3>
+                        <p style="color: #666; line-height: 1.6;">Agenda tus clases cuando más te convenga, adaptándose a tu estilo de vida</p>
                     </div>
                     
-                    <div class="private-class-card">
-                        <div class="private-class-icon">
+                    <div class="private-class-card" style="background: white; padding: 40px 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                        <div class="private-class-icon" style="background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; color: white;">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h3>Progreso Acelerado</h3>
-                        <p>Avanza más rápido con un plan de estudios personalizado y retroalimentación constante</p>
+                        <h3 style="color: #333; margin-bottom: 15px; font-size: 1.3rem;">Progreso Acelerado</h3>
+                        <p style="color: #666; line-height: 1.6;">Avanza más rápido con un plan de estudios personalizado y retroalimentación constante</p>
                     </div>
                 </div>
                 
@@ -359,6 +359,12 @@ try {
                             <i class="fab fa-whatsapp"></i>
                             <span>WhatsApp</span>
                         </a>
+                        <?php if (!empty($contactInfo['whatsapp_channel'])): ?>
+                        <a href="<?php echo htmlspecialchars($contactInfo['whatsapp_channel']); ?>" target="_blank" class="social-link whatsapp-channel" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Canal WhatsApp</span>
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

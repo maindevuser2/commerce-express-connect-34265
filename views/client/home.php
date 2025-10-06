@@ -471,12 +471,12 @@ $userDisplayName = getUserDisplayName($currentUser);
     </section>
 
     <!-- Private Classes Section -->
-    <section id="clases-privadas" class="private-classes">
+    <section id="clases-privadas" class="private-classes" style="background: #f8f9fa;">
         <div class="container">
             <div class="private-classes-content">
                 <div class="private-classes-header">
-                    <h2>Clases Privadas Personalizadas</h2>
-                    <p class="section-subtitle">¿Necesitas un enfoque más personalizado? Agenda una clase privada conmigo y avanza a tu propio ritmo</p>
+                    <h2 style="color: #333;">Clases Privadas Personalizadas</h2>
+                    <p class="section-subtitle" style="color: #666;">¿Necesitas un enfoque más personalizado? Agenda una clase privada conmigo y avanza a tu propio ritmo</p>
                 </div>
                 
                 <div class="private-classes-grid">
@@ -535,6 +535,12 @@ $userDisplayName = getUserDisplayName($currentUser);
                             <i class="fab fa-whatsapp"></i>
                             <span>WhatsApp</span>
                         </a>
+                        <?php if (!empty($contactInfo['whatsapp_channel'])): ?>
+                        <a href="<?php echo htmlspecialchars($contactInfo['whatsapp_channel']); ?>" target="_blank" class="social-link whatsapp-channel" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Canal WhatsApp</span>
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -544,8 +550,8 @@ $userDisplayName = getUserDisplayName($currentUser);
     <style>
     .private-classes {
         padding: 80px 0;
-        background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%);
-        color: white;
+        background: #f8f9fa;
+        color: #333;
     }
     
     .private-classes-header {
@@ -556,15 +562,14 @@ $userDisplayName = getUserDisplayName($currentUser);
     .private-classes-header h2 {
         font-size: 2.5rem;
         margin-bottom: 20px;
-        color: white;
+        color: #333;
     }
     
     .private-classes-header .section-subtitle {
         font-size: 1.2rem;
-        opacity: 0.95;
         max-width: 700px;
         margin: 0 auto;
-        color: white;
+        color: #666;
     }
     
     .private-classes-grid {
@@ -575,51 +580,50 @@ $userDisplayName = getUserDisplayName($currentUser);
     }
     
     .private-class-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
+        background: white;
         padding: 40px 30px;
         border-radius: 15px;
         text-align: center;
-        transition: transform 0.3s ease, background 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
     
     .private-class-card:hover {
         transform: translateY(-10px);
-        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
     
     .private-class-icon {
         width: 80px;
         height: 80px;
         margin: 0 auto 20px;
-        background: rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, #8a56e2 0%, #a256e2 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
+        font-size: 2rem;
+        color: white;
     }
     
     .private-class-card h3 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         margin-bottom: 15px;
-        color: white;
+        color: #333;
     }
     
     .private-class-card p {
-        opacity: 0.9;
         line-height: 1.6;
-        color: white;
+        color: #666;
     }
     
     .private-classes-cta {
-        background: rgba(255, 255, 255, 0.95);
+        background: white;
         padding: 50px;
         border-radius: 20px;
         text-align: center;
         margin-bottom: 60px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
     
     .private-classes-cta h3 {
@@ -666,14 +670,13 @@ $userDisplayName = getUserDisplayName($currentUser);
     .social-media-section h3 {
         font-size: 2rem;
         margin-bottom: 15px;
-        color: white;
+        color: #333;
     }
     
     .social-media-section p {
         font-size: 1.1rem;
         margin-bottom: 30px;
-        opacity: 0.9;
-        color: white;
+        color: #666;
     }
     
     .social-links {
@@ -689,13 +692,12 @@ $userDisplayName = getUserDisplayName($currentUser);
         align-items: center;
         gap: 10px;
         padding: 25px 30px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
+        background: white;
         border-radius: 15px;
         text-decoration: none;
-        color: white;
+        color: #333;
         transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         min-width: 140px;
     }
     
@@ -715,18 +717,27 @@ $userDisplayName = getUserDisplayName($currentUser);
     
     .social-link.instagram:hover {
         background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        color: white;
     }
     
     .social-link.facebook:hover {
         background: #1877F2;
+        color: white;
     }
     
     .social-link.youtube:hover {
         background: #FF0000;
+        color: white;
     }
     
     .social-link.whatsapp:hover {
         background: #25D366;
+        color: white;
+    }
+    
+    .social-link.whatsapp-channel:hover {
+        background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+        color: white;
     }
     
     @media (max-width: 768px) {
