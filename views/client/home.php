@@ -368,109 +368,7 @@ $userDisplayName = getUserDisplayName($currentUser);
         </div>
     </section>
 
-    <!-- Call to action for all courses -->
-    <section class="view-all-courses">
-        <div class="container">
-            <div class="view-all-content">
-                <h2>¿Listo para llevar tu inglés al siguiente nivel?</h2>
-                <p>Explora nuestra biblioteca completa de cursos y encuentra el camino perfecto hacia la fluidez.</p>
-                <a href="all-courses.php" class="btn-large">
-                    <i class="fas fa-book-open"></i> Ver Todos los Cursos
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Books Section -->
-    <section class="books-showcase">
-        <div class="container">
-            <div class="section-header">
-                <h2>Libros Recomendados</h2>
-                <p>Complementa tu aprendizaje con estos libros especializados disponibles en Amazon</p>
-            </div>
-            
-            <?php
-            // Obtener libros destacados
-            try {
-                $database = new \Database();
-                $db = $database->getConnection();
-                $bookModel = new Book($db);
-                $featuredBooks = $bookModel->getFeatured(6); // Obtener máximo 6 libros destacados
-            } catch (Exception $e) {
-                $featuredBooks = [];
-                error_log("Error cargando libros en index.php: " . $e->getMessage());
-            }
-            ?>
-            
-            <?php if (!empty($featuredBooks)): ?>
-                <div class="books-showcase-grid">
-                    <?php foreach ($featuredBooks as $book): ?>
-                        <div class="book-showcase-card" data-book-id="<?php echo $book['id']; ?>">
-                            <div class="book-showcase-cover">
-                                <?php if (!empty($book['cover_image'])): ?>
-                                    <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" 
-                                         alt="<?php echo htmlspecialchars($book['title']); ?>" 
-                                         loading="lazy">
-                                <?php else: ?>
-                                    <div class="book-showcase-placeholder">
-                                        <i class="fas fa-book"></i>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="book-showcase-info">
-                                <div class="book-showcase-category"><?php echo htmlspecialchars($book['category']); ?></div>
-                                <h3 class="book-showcase-title"><?php echo htmlspecialchars($book['title']); ?></h3>
-                                <p class="book-showcase-author">por <?php echo htmlspecialchars($book['author']); ?></p>
-                                <div class="book-showcase-price">
-                                    <span class="showcase-current-price">$<?php echo number_format($book['price'], 2); ?></span>
-                                </div>
-                                <a href="book-detail.php?id=<?php echo $book['id']; ?>" class="btn-showcase-details">
-                                    <i class="fas fa-info-circle"></i> Ver Detalles
-                                </a>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                
-                <div class="section-footer">
-                    <a href="all-books.php" class="btn-primary">Ver Más Libros</a>
-                </div>
-            <?php endif; ?>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="about-section" id="about-section">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>Conoce al Profesor Hernán</h2>
-                    <p>Con más de 15 años de experiencia, el Profesor Hernán ha ayudado a miles de estudiantes a alcanzar sus metas en inglés. Su metodología se centra en la práctica constante, la inmersión cultural y un enfoque personalizado para cada alumno.</p>
-                    <div class="about-features">
-                        <div class="feature-item">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <div>
-                                <h4>Metodología Comprobada</h4>
-                                <p>Clases dinámicas y efectivas diseñadas para el aprendizaje rápido.</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-users"></i>
-                            <div>
-                                <h4>Comunidad de Apoyo</h4>
-                                <p>Únete a una red de estudiantes y practica con hablantes nativos.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <img src="../../public/img/logo-profe-hernan.png" alt="Profesor Hernán">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Private Classes Section -->
+        <!-- Private Classes Section -->
     <section id="clases-privadas" class="private-classes" style="background: #f8f9fa;">
         <div class="container">
             <div class="private-classes-content">
@@ -544,6 +442,77 @@ $userDisplayName = getUserDisplayName($currentUser);
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+    
+    <!-- Call to action for all courses -->
+    <section class="view-all-courses">
+        <div class="container">
+            <div class="view-all-content">
+                <h2>¿Listo para llevar tu inglés al siguiente nivel?</h2>
+                <p>Explora nuestra biblioteca completa de cursos y encuentra el camino perfecto hacia la fluidez.</p>
+                <a href="all-courses.php" class="btn-large">
+                    <i class="fas fa-book-open"></i> Ver Todos los Cursos
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section class="books-showcase">
+        <div class="container">
+            <div class="section-header">
+                <h2>Libros Recomendados</h2>
+                <p>Complementa tu aprendizaje con estos libros especializados disponibles en Amazon</p>
+            </div>
+            
+            <?php
+            // Obtener libros destacados
+            try {
+                $database = new \Database();
+                $db = $database->getConnection();
+                $bookModel = new Book($db);
+                $featuredBooks = $bookModel->getFeatured(6); // Obtener máximo 6 libros destacados
+            } catch (Exception $e) {
+                $featuredBooks = [];
+                error_log("Error cargando libros en index.php: " . $e->getMessage());
+            }
+            ?>
+            
+            <?php if (!empty($featuredBooks)): ?>
+                <div class="books-showcase-grid">
+                    <?php foreach ($featuredBooks as $book): ?>
+                        <div class="book-showcase-card" data-book-id="<?php echo $book['id']; ?>">
+                            <div class="book-showcase-cover">
+                                <?php if (!empty($book['cover_image'])): ?>
+                                    <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($book['title']); ?>" 
+                                         loading="lazy">
+                                <?php else: ?>
+                                    <div class="book-showcase-placeholder">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="book-showcase-info">
+                                <div class="book-showcase-category"><?php echo htmlspecialchars($book['category']); ?></div>
+                                <h3 class="book-showcase-title"><?php echo htmlspecialchars($book['title']); ?></h3>
+                                <p class="book-showcase-author">por <?php echo htmlspecialchars($book['author']); ?></p>
+                                <div class="book-showcase-price">
+                                    <span class="showcase-current-price">$<?php echo number_format($book['price'], 2); ?></span>
+                                </div>
+                                <a href="book-detail.php?id=<?php echo $book['id']; ?>" class="btn-showcase-details">
+                                    <i class="fas fa-info-circle"></i> Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div class="section-footer">
+                    <a href="all-books.php" class="btn-primary">Ver Más Libros</a>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
     

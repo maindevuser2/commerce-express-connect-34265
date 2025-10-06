@@ -589,14 +589,14 @@ try {
     .social-media-section h3 {
         font-size: 2rem;
         margin-bottom: 15px;
-        color: white;
+        color: black
     }
     
     .social-media-section p {
         font-size: 1.1rem;
         margin-bottom: 30px;
         opacity: 0.9;
-        color: white;
+        color: black;
     }
     
     .social-links {
