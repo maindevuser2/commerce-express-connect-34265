@@ -104,24 +104,23 @@ if ($levelFilter || $searchQuery) {
             
             <div class="auth-links">
                 <?php if ($isAuthenticated): ?>
-                    <div class="user-menu" style="position: relative;">
-                        <button class="user-button" style="display: flex; align-items: center; gap: 0.5rem; background: transparent; border: 1px solid #ddd; padding: 0.5rem 1rem; border-radius: 8px; color: #333; cursor: pointer; transition: all 0.3s ease;" onclick="toggleUserMenu()">
-                            <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
-                            <i class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.3s;"></i>
+                    <div class="user-menu">
+                        <button class="user-button" onclick="toggleUserMenu(event)">
+                            <i class="fas fa-bars" style="font-size: 1.3rem;"></i>
                         </button>
-                        <div class="user-dropdown" id="userDropdown" style="display: none; position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; overflow: hidden;">
+                        <div class="user-dropdown" id="userDropdown">
                             <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
-                                <a href="../admin/index.php?controller=admin&action=dashboard" class="dropdown-item" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #333; text-decoration: none; transition: background 0.2s;">
+                                <a href="../admin/index.php?controller=admin&action=dashboard" class="dropdown-item">
                                     <i class="fas fa-cog"></i> Panel Admin
                                 </a>
                             <?php endif; ?>
-                            <a href="purchase-history.php" class="dropdown-item" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #333; text-decoration: none; transition: background 0.2s;">
+                            <a href="purchase-history.php" class="dropdown-item">
                                 <i class="fas fa-graduation-cap"></i> Mis Cursos
                             </a>
-                            <a href="profile.php" class="dropdown-item" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #333; text-decoration: none; transition: background 0.2s;">
+                            <a href="profile.php" class="dropdown-item">
                                 <i class="fas fa-user"></i> Mi Perfil
                             </a>
-                            <a href="../../logout.php" class="dropdown-item" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #dc3545; text-decoration: none; transition: background 0.2s; border-top: 1px solid #eee;">
+                            <a href="../../logout.php" class="dropdown-item">
                                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                             </a>
                         </div>
@@ -133,30 +132,21 @@ if ($levelFilter || $searchQuery) {
             </div>
         </div>
     </header>
-    <style>
-        .user-button:hover {
-            background: #f8f9fa !important;
-            border-color: #8a56e2 !important;
-        }
-        .user-button:hover .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-        .dropdown-item:hover {
-            background: #f8f9fa !important;
-        }
-    </style>
     <script>
-        function toggleUserMenu() {
+        function toggleUserMenu(event) {
+            event.stopPropagation();
             const dropdown = document.getElementById('userDropdown');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            dropdown.classList.toggle('active');
         }
         
-        document.addEventListener('click', function(event) {
-            const userMenu = document.querySelector('.user-menu');
-            if (userMenu && !userMenu.contains(event.target)) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(event) {
+                const userMenu = document.querySelector('.user-menu');
                 const dropdown = document.getElementById('userDropdown');
-                if (dropdown) dropdown.style.display = 'none';
-            }
+                if (userMenu && !userMenu.contains(event.target)) {
+                    dropdown?.classList.remove('active');
+                }
+            });
         });
     </script>
 
