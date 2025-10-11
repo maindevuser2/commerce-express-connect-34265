@@ -57,13 +57,13 @@ $offset = ($page - 1) * $per_page;
 // Obtener libros según los filtros
 try {
     if (!empty($search)) {
-        $books = $bookModel->search($search, $per_page);
+        $books = $bookModel->search($search, $per_page, $offset);
         $totalBooks = count($bookModel->search($search)); // Para paginación exacta
     } elseif (!empty($category)) {
-        $books = $bookModel->getByCategory($category, $per_page);
+        $books = $bookModel->getByCategory($category, $per_page, $offset);
         $totalBooks = count($bookModel->getByCategory($category));
     } else {
-        $books = $bookModel->getActive($per_page);
+        $books = $bookModel->getActive($per_page, $offset);
         $totalBooks = $bookModel->countActive();
     }
     

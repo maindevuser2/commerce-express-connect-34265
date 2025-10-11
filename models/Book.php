@@ -144,7 +144,7 @@ class Book {
     }
 
     // Obtener libros activos
-    public function getActive($limit = null) {
+    public function getActive($limit = null, $offset = null) {
         try {
             $query = "SELECT * FROM " . $this->table_name . " 
                      WHERE is_active = 1 
@@ -152,6 +152,9 @@ class Book {
             
             if ($limit) {
                 $query .= " LIMIT " . intval($limit);
+                if ($offset) {
+                    $query .= " OFFSET " . intval($offset);
+                }
             }
 
             $stmt = $this->conn->prepare($query);
@@ -189,7 +192,7 @@ class Book {
     }
 
     // Obtener libros por categoría
-    public function getByCategory($category, $limit = null) {
+    public function getByCategory($category, $limit = null, $offset = null) {
         try {
             $query = "SELECT * FROM " . $this->table_name . " 
                      WHERE category = :category AND is_active = 1 
@@ -197,6 +200,9 @@ class Book {
             
             if ($limit) {
                 $query .= " LIMIT " . intval($limit);
+                if ($offset) {
+                    $query .= " OFFSET " . intval($offset);
+                }
             }
 
             $stmt = $this->conn->prepare($query);
@@ -268,7 +274,7 @@ class Book {
     }
 
     // Buscar libros
-    public function search($searchTerm, $limit = null) {
+    public function search($searchTerm, $limit = null, $offset = null) {
         try {
             $query = "SELECT * FROM " . $this->table_name . " 
                      WHERE (title LIKE :search OR author LIKE :search OR description LIKE :search) 
@@ -277,6 +283,9 @@ class Book {
             
             if ($limit) {
                 $query .= " LIMIT " . intval($limit);
+                if ($offset) {
+                    $query .= " OFFSET " . intval($offset);
+                }
             }
 
             $stmt = $this->conn->prepare($query);

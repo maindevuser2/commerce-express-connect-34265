@@ -597,8 +597,16 @@ try {
                 </div>
             </div>
 
-            <!-- Books List -->
+            <!-- Search Section -->
             <div class="books-section">
+                <div class="search-section" style="background: white; padding: 2rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); border: 1px solid #f1f5f9;">
+                    <div class="search-box" style="position: relative; max-width: 500px; margin: 0 auto;">
+                        <i class="fas fa-search" style="position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 1.2rem;"></i>
+                        <input type="text" id="bookSearch" placeholder="Buscar libros por título, autor o categoría..." 
+                               style="width: 100%; padding: 1.25rem 1.5rem 1.25rem 3.5rem; border: 2px solid #e2e8f0; border-radius: 50px; font-size: 1rem; font-weight: 500; transition: all 0.3s; background: #f8fafc;">
+                    </div>
+                </div>
+
                 <div class="books-container">
                     <div class="books-header">
                         <h2><i class="fas fa-list"></i> Lista de Libros</h2>
@@ -627,7 +635,7 @@ try {
                             </thead>
                             <tbody>
                                 <?php foreach ($books as $book): ?>
-                                    <tr>
+                                    <tr class="book-row">
                                         <td>
                                             <?php if (!empty($book['cover_image'])): ?>
                                                 <img src="<?php echo htmlspecialchars($book['cover_image']); ?>" 
@@ -643,7 +651,7 @@ try {
                                             <div class="book-title"><?php echo htmlspecialchars($book['title']); ?></div>
                                             <div class="book-author">por <?php echo htmlspecialchars($book['author']); ?></div>
                                         </td>
-                                        <td><?php echo htmlspecialchars($book['category']); ?></td>
+                                        <td class="book-category"><?php echo htmlspecialchars($book['category']); ?></td>
                                         <td>
                                             <span class="book-price">$<?php echo number_format($book['price'], 2); ?></span>
                                         </td>
@@ -679,6 +687,37 @@ try {
     </div>
 
     <script>
+        // Funcionalidad de búsqueda
+        document.getElementById('bookSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.book-row');
+
+            rows.forEach(row => {
+                const title = row.querySelector('.book-title').textContent.toLowerCase();
+                const author = row.querySelector('.book-author').textContent.toLowerCase();
+                const category = row.querySelector('.book-category').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || author.includes(searchTerm) || category.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Efecto de foco en el buscador
+        document.getElementById('bookSearch').addEventListener('focus', function() {
+            this.style.borderColor = '#6366f1';
+            this.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
+            this.style.background = 'white';
+        });
+
+        document.getElementById('bookSearch').addEventListener('blur', function() {
+            this.style.borderColor = '#e2e8f0';
+            this.style.boxShadow = 'none';
+            this.style.background = '#f8fafc';
+        });
+
         // Animación de entrada para las tarjetas
         document.addEventListener('DOMContentLoaded', function() {
             const statCards = document.querySelectorAll('.stat-card');

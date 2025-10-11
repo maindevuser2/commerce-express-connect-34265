@@ -736,12 +736,10 @@ $currentUser = AuthController::getCurrentUser();
         // Funcionalidad de búsqueda y filtros
         document.getElementById('orderSearch').addEventListener('input', filterOrders);
         document.getElementById('statusFilter').addEventListener('change', filterOrders);
-        document.getElementById('dateFilter').addEventListener('change', filterOrders);
 
         function filterOrders() {
             const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
             const rows = document.querySelectorAll('.table-row');
 
             rows.forEach(row => {
