@@ -3,11 +3,17 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/config/bootstrap.php';
+require_once __DIR__ . '/config/database.php'; // <-- Asegúrate de incluir esto si usas la clase Database
 require_once 'controllers/AuthController.php';
 require_once 'helpers/SecurityHelper.php';
 
 use Controllers\AuthController;
 use Helpers\SecurityHelper;
+
+// Inicializa la conexión PDO
+$database = new Database();
+$pdo = $database->getConnection();
 
 // Redirigir si ya está logueado
 if (AuthController::isAuthenticated()) {
@@ -20,12 +26,23 @@ if (AuthController::isAuthenticated()) {
 }
 
 // Obtener token de la URL
-$token = $_GET['token'] ?? '';
+$token = $_POST['token'] ?? $_GET['token'] ?? '';
+$hashedToken = hash('sha256', $token);
 
-if (empty($token)) {
-    AuthController::setFlashMessage('error', 'Token de recuperación inválido.');
+$stmt = $pdo->prepare("SELECT * FROM password_resets WHERE token = ? AND used = 0 AND expires_at > NOW()");
+$stmt->execute([$hashedToken]);
+$reset = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($reset) {
+    error_log("DEBUG reset_password.php - Registro válido encontrado: " . print_r($reset, true));
+} else {
+    error_log("DEBUG reset_password.php - NO se encontró registro válido (token, used_at, expires_at)");
+}
+
+if (!$reset) {
+    $_SESSION['flash_message'] = ['type' => 'error', 'message' => 'Token inválido, expirado o ya utilizado.'];
     header('Location: login.php');
-    exit();
+    exit;
 }
 
 // Procesar reset de contraseña

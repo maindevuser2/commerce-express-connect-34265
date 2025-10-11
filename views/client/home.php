@@ -115,6 +115,87 @@ $userDisplayName = getUserDisplayName($currentUser);
         <link rel="stylesheet" href="../../public/css/client/book-section.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .user-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            padding: 0.75rem;
+            border-radius: 8px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 45px;
+            height: 45px;
+        }
+        
+        .user-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            min-width: 220px;
+            z-index: 9999;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+            color: #dc3545;
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+    </style>
+    <script>
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(event) {
+                const userMenu = document.querySelector('.user-menu');
+                const dropdown = document.getElementById('userDropdown');
+                if (userMenu && !userMenu.contains(event.target)) {
+                    dropdown?.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -129,9 +210,8 @@ $userDisplayName = getUserDisplayName($currentUser);
                 <ul>
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#best-sellers">Cursos</a></li>
-                    <li><a href="#clases-privadas">Clases Privadas</a></li>
-                    <li><a href="#sobre-nosotros">Sobre Nosotros</a></li>
-                    <li><a href="all-courses.php">Todos los Cursos</a></li>
+                    <li><a href="#clases-privadas">Clases</a></li>
+                    <li><a href="#books-showcase">Libros</a></li>
                     <li><a href="cart.php">
                         <i class="fas fa-shopping-cart"></i>
                         Carrito
@@ -143,13 +223,27 @@ $userDisplayName = getUserDisplayName($currentUser);
             </nav>
             
             <div class="auth-links">
-                <span>Hola, <?php echo htmlspecialchars($userDisplayName); ?></span>
-                <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
-                    <a href="../admin/index.php?controller=admin&action=dashboard" class="btn-admin">Panel Admin</a>
-                <?php endif; ?>
-                <a href="purchase-history.php" class="btn-history active">Mis Cursos</a>
-                <a href="profile.php" class="btn-profile">Mi Perfil</a>
-                <a href="../../logout.php" class="btn-logout">Cerrar Sesión</a>
+                <div class="user-menu">
+                    <button class="user-button" onclick="toggleUserMenu(event)">
+                        <i class="fas fa-bars" style="font-size: 1.3rem;"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
+                            <a href="../admin/index.php?controller=admin&action=dashboard" class="dropdown-item">
+                                <i class="fas fa-cog"></i> Panel Admin
+                            </a>
+                        <?php endif; ?>
+                        <a href="purchase-history.php" class="dropdown-item">
+                            <i class="fas fa-graduation-cap"></i> Mis Cursos
+                        </a>
+                        <a href="profile.php" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="../../logout.php" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -163,7 +257,7 @@ $userDisplayName = getUserDisplayName($currentUser);
                     <p>Aprende a tu propio ritmo con lecciones interactivas, profesores expertos y una comunidad de apoyo. ¡Tu fluidez comienza aquí!</p>
                     <div class="banner-buttons">
                         <a href="#best-sellers" class="btn-primary">Explorar Cursos</a>
-                        <a href="#about-section" class="btn-secondary">Conocer al Profesor</a>
+                        <a href="#private-classes-cta" class="btn-secondary">Contacta al Profesor</a>
                     </div>
                 </div>
                 <div class="banner-image">
@@ -406,7 +500,7 @@ $userDisplayName = getUserDisplayName($currentUser);
                     </div>
                 </div>
                 
-                <div class="private-classes-cta">
+                <div class="private-classes-cta" id="private-classes-cta">
                     <h3>¿Listo para empezar?</h3>
                     <p>Contáctame por WhatsApp y conversemos sobre tus objetivos de aprendizaje</p>
                     <a href="https://wa.me/<?php echo htmlspecialchars($contactInfo['whatsapp_number'] ?? '573123456789'); ?>?text=Hola,%20estoy%20interesado%20en%20clases%20privadas%20de%20inglés" 
@@ -462,7 +556,7 @@ $userDisplayName = getUserDisplayName($currentUser);
     </section>
 
     <!-- Books Section -->
-    <section class="books-showcase">
+    <section class="books-showcase" id="books-showcase">
         <div class="container">
             <div class="section-header">
                 <h2>Libros Recomendados</h2>

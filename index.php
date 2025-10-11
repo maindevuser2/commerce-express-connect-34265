@@ -166,9 +166,9 @@ try {
                 <ul>
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#cursos">Cursos</a></li>
-                    <li><a href="#clases-privadas">Clases Privadas</a></li>
+                    <li><a href="#clases-privadas">Clases</a></li>
+                    <li><a href="#books-showcase">Libros</a></li>
                     <li><a href="#sobre-nosotros">Sobre Nosotros</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
                 </ul>
             </nav>
             
@@ -373,7 +373,7 @@ try {
     </section>
 
     <!-- Books Section -->
-    <section class="books-showcase">
+    <section class="books-showcase" id="books-showcase">
         <div class="container">
             <div class="section-header">
                 <h2>Libros Recomendados</h2>

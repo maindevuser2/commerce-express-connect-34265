@@ -9,9 +9,11 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/UserCourse.php';
 require_once __DIR__ . '/EmailController.php';
 require_once __DIR__ . '/../helpers/SecurityHelper.php';
+require_once __DIR__ . '/../helpers/SecurityLogger.php';
 
 use Models\User;
 use Helpers\SecurityHelper;
+use Helpers\SecurityLogger;
 
 class AuthController {
 
@@ -216,12 +218,25 @@ class AuthController {
                 exit();
             }
 
-            // Verificar token
+            // Verificar token (ahora verifica también si fue usado)
             $resetData = $this->validateResetToken($token);
             if (!$resetData) {
-                self::setFlashMessage('error', 'Token inválido o expirado.');
+                self::setFlashMessage('error', 'Token inválido, expirado o ya utilizado.');
                 header('Location: login.php');
                 exit();
+            }
+
+            // Verificar IP de seguridad (opcional pero recomendado)
+            $currentIP = $this->getClientIP();
+            if ($resetData['ip_address'] && $resetData['ip_address'] !== $currentIP) {
+                // Registrar posible uso malicioso
+                $securityLogger = new SecurityLogger();
+                $securityLogger->logSecurityEvent(
+                    $resetData['user_id'],
+                    'password_reset_ip_mismatch',
+                    "IP cambió durante reset de contraseña. Original: {$resetData['ip_address']}, Actual: {$currentIP}",
+                    'medium'
+                );
             }
 
             // Actualizar contraseña
@@ -229,16 +244,34 @@ class AuthController {
             $userModel = new User($this->db);
             
             if ($userModel->updatePassword($resetData['user_id'], $hashedPassword)) {
-                // Eliminar token usado
-                $this->deleteResetToken($resetData['id']);
+                // Marcar token como usado
+                $this->markTokenAsUsed($resetData['id']);
                 
-                // Log de cambio de contraseña
-                error_log("Contraseña cambiada exitosamente para usuario ID: " . $resetData['user_id']);
+                // Invalidar todas las sesiones activas del usuario
+                $this->invalidateUserSessions($resetData['user_id']);
                 
-                self::setFlashMessage('success', 'Contraseña actualizada exitosamente. Ya puedes iniciar sesión.');
+                // Obtener datos del usuario para notificación
+                $userData = $userModel->findById($resetData['user_id']);
+                
+                // Enviar email de confirmación de cambio
+                if ($userData) {
+                    $this->sendPasswordChangedNotification(
+                        $userData['email'], 
+                        $userData['first_name']
+                    );
+                }
+                
+                // Log de seguridad
+                error_log("Contraseña cambiada exitosamente para usuario ID: " . $resetData['user_id'] . " desde IP: " . $currentIP);
+                
+                $securityLogger = new SecurityLogger();
+                $securityLogger->logPasswordChange($resetData['user_id'], 'password_reset');
+                
+                self::setFlashMessage('success', 'Contraseña actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.');
                 header('Location: login.php');
                 exit();
             } else {
+                error_log("Error al actualizar contraseña para usuario ID: " . $resetData['user_id']);
                 self::setFlashMessage('error', 'Error al actualizar la contraseña. Intenta nuevamente.');
                 header('Location: reset-password.php?token=' . urlencode($token));
                 exit();
@@ -769,22 +802,128 @@ class AuthController {
     }
 
     /**
-     * Validar token de reset
+     * Validar token de reset - Mejorado con verificación de uso
      */
     private function validateResetToken($token) {
         try {
             $hashedToken = hash('sha256', $token);
             $stmt = $this->db->prepare("
-                SELECT id, user_id, expires_at 
+                SELECT id, user_id, expires_at, ip_address, used_at 
                 FROM password_resets 
-                WHERE token = ? AND expires_at > NOW()
+                WHERE token = ? 
+                AND expires_at > NOW()
+                AND used_at IS NULL
                 LIMIT 1
             ");
             $stmt->execute([$hashedToken]);
             
-            return $stmt->fetch();
+            $result = $stmt->fetch();
+            
+            if (!$result) {
+                error_log("Token de reset inválido, expirado o ya usado");
+            }
+            
+            return $result;
         } catch (\Exception $e) {
             error_log("Error validando token de reset: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Marcar token como usado
+     */
+    private function markTokenAsUsed($tokenId) {
+        try {
+            $stmt = $this->db->prepare("UPDATE password_resets SET used_at = NOW() WHERE id = ?");
+            $stmt->execute([$tokenId]);
+            error_log("Token de reset marcado como usado: ID " . $tokenId);
+        } catch (\Exception $e) {
+            error_log("Error marcando token como usado: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Invalidar todas las sesiones activas del usuario
+     */
+    private function invalidateUserSessions($userId) {
+        try {
+            // Intentar eliminar sesiones de la base de datos si existe tabla de sesiones
+            $stmt = $this->db->prepare("DELETE FROM user_sessions WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            error_log("Sesiones activas invalidadas para usuario ID: " . $userId);
+        } catch (\Exception $e) {
+            // Si no existe tabla de sesiones, registrar advertencia
+            error_log("Advertencia: No se pudieron invalidar sesiones (tabla no existe): " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Enviar email de notificación de cambio de contraseña
+     */
+    private function sendPasswordChangedNotification($email, $firstName) {
+        try {
+            require_once __DIR__ . '/EmailController.php';
+            
+            $subject = "Confirmación de Cambio de Contraseña - English Learning Platform";
+            $body = "
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                </head>
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
+                        <h2 style='color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 10px;'>
+                            ✓ Contraseña Actualizada
+                        </h2>
+                        <p>Hola <strong>{$firstName}</strong>,</p>
+                        <p>Te confirmamos que tu contraseña ha sido <strong>cambiada exitosamente</strong>.</p>
+                        
+                        <div style='background-color: #f8f9fa; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0;'>
+                            <p style='margin: 0;'><strong>Detalles del cambio:</strong></p>
+                            <p style='margin: 5px 0;'>📅 Fecha: " . date('d/m/Y H:i:s') . "</p>
+                            <p style='margin: 5px 0;'>📍 IP: " . $this->getClientIP() . "</p>
+                        </div>
+                        
+                        <div style='background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0;'>
+                            <p style='margin: 0;'><strong>⚠️ ¿No fuiste tú?</strong></p>
+                            <p style='margin: 5px 0;'>Si no realizaste este cambio, tu cuenta puede estar comprometida. 
+                            Contacta inmediatamente a nuestro equipo de soporte.</p>
+                        </div>
+                        
+                        <p>Ahora puedes iniciar sesión con tu nueva contraseña.</p>
+                        
+                        <p style='margin-top: 30px;'>
+                            <a href='" . APP_URL . "/login.php' 
+                               style='background-color: #007bff; color: white; padding: 12px 30px; 
+                                      text-decoration: none; border-radius: 5px; display: inline-block;'>
+                                Iniciar Sesión
+                            </a>
+                        </p>
+                        
+                        <hr style='margin: 30px 0; border: none; border-top: 1px solid #dee2e6;'>
+                        <p style='font-size: 12px; color: #6c757d;'>
+                            English Learning Platform - Sistema de Seguridad<br>
+                            Este es un mensaje automático, por favor no respondas a este email.
+                        </p>
+                    </div>
+                </body>
+                </html>
+            ";
+
+            $emailController = new EmailController();
+            $sent = $emailController->sendEmail($email, $subject, $body);
+            
+            if ($sent) {
+                error_log("Email de confirmación de cambio de contraseña enviado a: " . $email);
+            } else {
+                error_log("Error al enviar email de confirmación a: " . $email);
+            }
+            
+            return $sent;
+        } catch (\Exception $e) {
+            error_log("Error enviando notificación de cambio de contraseña: " . $e->getMessage());
             return false;
         }
     }

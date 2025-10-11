@@ -1,10 +1,10 @@
 FIXME
-1. FIX: Sistema de recuperar contraseña.
-2. FIX: Filtros en all-books.php
-3. FIX: Filtros en las vistas del administrador
-4. FIX: Calendario no pudo cargar los datos. Intenta cargarlos más tarde. (Al darle en "agregar al calendario de google arroja ese resultado desde el calendario de google)
+1. FIX: Filtros en all-books.php
+2. FIX: Filtros en las vistas del administrador
+3. FIX: Agregar al calendario en el panel del administrador
 
 TODO
-1. Unificar los footer y el nav
-2. Unificar el nav
-3. Agregar un boton o flecha en el login y signup para volver al index.php
+1. Unificar los footer
+2. Actualizar el estilo del nav por el estilo que hay en home.php e index.php en:
+    all-sync-classes.php
+    all-courses.php

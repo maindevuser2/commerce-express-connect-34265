@@ -276,6 +276,81 @@ $currentUser = AuthController::getCurrentUser();
                 padding: 20px;
             }
         }
+
+                /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: rgba(255, 255, 255, 0.1);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: #fbbf24;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -285,32 +360,32 @@ $currentUser = AuthController::getCurrentUser();
             <div class="sidebar-header">
                 <h2><i class="fas fa-graduation-cap"></i> Admin Panel</h2>
             </div>
-            <nav class="sidebar-menu">
-                <a href="<?php echo $base_url; ?>?page=admin&action=dashboard" class="menu-item">
-                    <i class="fas fa-chart-line"></i> Dashboard
+            <nav class="sidebar-nav">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=users" class="menu-item">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=users" class="nav-link">
                     <i class="fas fa-users"></i> Usuarios
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=courses" class="menu-item">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=courses" class="nav-link">
                     <i class="fas fa-book"></i> Cursos
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=books" class="menu-item">
-                    <i class="fas fa-book-open"></i> Libros
-                </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=sync-classes" class="menu-item">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=sync-classes" class="nav-link">
                     <i class="fas fa-video"></i> Clases Sincrónicas
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=orders" class="menu-item">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=orders" class="nav-link">
                     <i class="fas fa-shopping-cart"></i> Pedidos
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=contact-info" class="menu-item active">
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=books" class="nav-link">
+                    <i class="fas fa-book-open"></i> Libros
+                </a>
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=contact-info" class="nav-link">
                     <i class="fas fa-address-book"></i> Información de Contacto
                 </a>
-                <a href="<?php echo $base_url; ?>?page=admin&action=profile" class="menu-item">
-                    <i class="fas fa-user"></i> Mi Perfil
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=profile" class="nav-link">
+                    <i class="fas fa-user-cog"></i> Mi Perfil
                 </a>
-                <a href="logout.php" class="menu-item">
+                <a href="<?php echo $baseUrl; ?>logout.php" class="nav-link">
                     <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </a>
             </nav>

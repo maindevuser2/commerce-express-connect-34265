@@ -128,7 +128,7 @@ error_log("reCAPTCHA Site Key: " . $recaptcha_site_key);
         <div class="container">
             <div class="auth-container">
                 <div class="auth-header">
-                    <a href="index.php" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; color: #007bff; text-decoration: none; margin-bottom: 20px; font-size: 14px;">
+                    <a href="index.php" class="btn-back" style="display: inline-flex; align-items: center; gap: 8px; color: #000000ff; text-decoration: none; margin-bottom: 20px; font-size: 14px;">
                         <i class="fas fa-arrow-left"></i>
                         Volver al inicio
                     </a>

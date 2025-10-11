@@ -92,17 +92,30 @@ resetPasswordForm.addEventListener('submit', async (e) => {
     clearResetMessages();
 
     try {
-        // Enviar formulario
+        // Enviar formulario a send-reset-email.php
         const formData = new FormData();
         formData.append('reset_email', email);
+        formData.append('csrf_token', window.APP_CONFIG.csrfToken);
 
-        const response = await fetch('login.php', {
+        const response = await fetch('send-reset-email.php', {
             method: 'POST',
             body: formData
         });
 
-        // Recargar la página para mostrar el mensaje flash
-        window.location.reload();
+        const data = await response.json();
+
+        if (data.success) {
+            showResetMessage('success', data.success);
+            document.getElementById('resetEmail').value = '';
+            
+            // Cerrar modal después de 3 segundos
+            setTimeout(() => {
+                passwordResetModal.classList.remove('show');
+                clearResetMessages();
+            }, 3000);
+        } else {
+            showResetMessage('error', data.error || 'Error al procesar la solicitud.');
+        }
 
     } catch (error) {
         console.error('Error:', error);

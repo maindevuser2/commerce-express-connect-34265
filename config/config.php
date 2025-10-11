@@ -75,7 +75,7 @@ define('RECAPTCHA_SECRET_KEY', $_ENV['RECAPTCHA_SECRET_KEY'] ?? '6LdvMtArAAAAAES
 define('SMTP_HOST', $_ENV['SMTP_HOST'] ?? 'smtp.gmail.com');
 define('SMTP_PORT', $_ENV['SMTP_PORT'] ?? '587');
 define('SMTP_USERNAME', $_ENV['SMTP_USERNAME'] ?? '');
-define('SMTP_PASSWORD', $_ENV['SMTP_PASSWORD'] ?? '');
+define('SMTP_PASSWORD', $_ENV['SMTP_PASSWORD'] ?? 'pesadzfrnnozxztc');
 define('FROM_EMAIL', $_ENV['FROM_EMAIL'] ?? '');
 define('FROM_NAME', $_ENV['FROM_NAME'] ?? APP_NAME);
 

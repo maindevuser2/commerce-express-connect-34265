@@ -619,6 +619,9 @@ $currentUser = AuthController::getCurrentUser();
                 <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=books" class="nav-link">
                     <i class="fas fa-book-open"></i> Libros
                 </a>
+                <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=contact-info" class="nav-link">
+                    <i class="fas fa-address-book"></i> Información de Contacto
+                </a>
                 <a href="<?php echo $baseUrl; ?>index.php?page=admin&action=profile" class="nav-link">
                     <i class="fas fa-user-cog"></i> Mi Perfil
                 </a>
